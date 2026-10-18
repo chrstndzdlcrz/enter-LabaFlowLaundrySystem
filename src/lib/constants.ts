@@ -95,6 +95,22 @@ export const SERVICE_UNITS = [
   { value: "service", label: "per service" },
 ];
 
+/** Compact suffix used next to a price, e.g. "₱45.00 / kg". */
+export const UNIT_SUFFIX: Record<string, string> = {
+  kg: "/ kg",
+  piece: "/ piece",
+  load: "/ load",
+  service: "/ service",
+};
+
+/** What the customer types into the quantity field for each unit. */
+export const UNIT_QUANTITY_LABEL: Record<string, string> = {
+  kg: "Weight in kilograms",
+  piece: "Number of pieces",
+  load: "Number of loads",
+  service: "Number of services",
+};
+
 export const INVENTORY_REASONS = [
   { value: "purchase", label: "Purchase / restock" },
   { value: "consumption", label: "Shop consumption" },
