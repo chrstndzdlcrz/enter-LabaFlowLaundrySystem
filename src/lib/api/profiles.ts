@@ -97,6 +97,8 @@ export async function createStaffAccount(input: {
   full_name: string;
   phone: string;
   role: "staff" | "admin";
+  /** Optional: set a specific password. Left empty, the backend generates one. */
+  password?: string;
 }): Promise<{ email: string; temporary_password: string; role: string }> {
   const { data, error } = await supabase.functions.invoke("create-staff-account", { body: input });
   if (error) throw new Error(error.message);

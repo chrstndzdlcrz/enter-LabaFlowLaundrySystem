@@ -1,0 +1,5 @@
+-- Express Rush is removed from the public price list, as requested. Deactivated
+-- rather than deleted so any order that used it keeps its history.
+update public.services
+   set is_active = false, updated_at = now()
+ where name = 'Express Rush';

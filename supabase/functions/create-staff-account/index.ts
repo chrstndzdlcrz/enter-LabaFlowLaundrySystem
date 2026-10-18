@@ -56,7 +56,13 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: 'admin_only' }, 403);
   }
 
-  let payload: { email?: string; full_name?: string; phone?: string; role?: string };
+  let payload: {
+    email?: string;
+    full_name?: string;
+    phone?: string;
+    role?: string;
+    password?: string;
+  };
   try {
     payload = await req.json();
   } catch {
@@ -75,7 +81,26 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: 'invalid_name', message: 'Enter the staff member name.' }, 400);
   }
 
-  const password = temporaryPassword();
+  // An admin may set the password explicitly (still length and character checked);
+  // otherwise a one-time temporary password is generated.
+  const requestedPassword = (payload.password ?? '').trim();
+  if (
+    requestedPassword !== '' &&
+    (requestedPassword.length < 8 ||
+      !/[A-Za-z]/.test(requestedPassword) ||
+      !/\d/.test(requestedPassword))
+  ) {
+    return json(
+      {
+        ok: false,
+        error: 'weak_password',
+        message: 'Use at least 8 characters, with both letters and numbers.',
+      },
+      400,
+    );
+  }
+
+  const password = requestedPassword !== '' ? requestedPassword : temporaryPassword();
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
@@ -116,6 +141,9 @@ Deno.serve(async (req) => {
     email,
     role,
     temporary_password: password,
-    message: 'Share this temporary password with the staff member and ask them to change it after signing in.',
+    message:
+      requestedPassword !== ''
+        ? 'The account is ready. Share the password you set with this person, and ask them to change it after signing in.'
+        : 'Share this temporary password with the staff member and ask them to change it after signing in.',
   });
 });

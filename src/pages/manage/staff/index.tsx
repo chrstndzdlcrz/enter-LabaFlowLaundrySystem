@@ -32,6 +32,7 @@ function CreateStaffDialog() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<"staff" | "admin">("staff");
+  const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -46,6 +47,7 @@ function CreateStaffDialog() {
         full_name: fullName.trim(),
         phone: phone.trim(),
         role,
+        password: password.trim() || undefined,
       });
     },
     onSuccess: async (created) => {
@@ -54,6 +56,7 @@ function CreateStaffDialog() {
       setFullName("");
       setEmail("");
       setPhone("");
+      setPassword("");
       await alertInfo(
         "Staff account created",
         `Share these details with ${created.email}: temporary password ${created.temporary_password}. They can change it after signing in. The account was created on the backend, so the password is shown only once here.`,
@@ -74,8 +77,8 @@ function CreateStaffDialog() {
         <DialogHeader>
           <DialogTitle className="font-display">New staff account</DialogTitle>
           <DialogDescription>
-            The account is created on the backend with a generated temporary password — it is never chosen in
-            the browser.
+            The account is created on the backend. Leave the password empty and one is generated for you, or
+            set your own (8+ characters with letters and numbers).
           </DialogDescription>
         </DialogHeader>
 
@@ -115,6 +118,19 @@ function CreateStaffDialog() {
                 <SelectItem value="admin">Admin / Owner — full access</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="staff-password">Password (optional)</Label>
+            <Input
+              id="staff-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Leave empty to generate one"
+              autoComplete="new-password"
+            />
+            <p className="text-xs text-muted-foreground">
+              If you leave this empty, the backend generates a one-time password and shows it to you once.
+            </p>
           </div>
         </div>
 

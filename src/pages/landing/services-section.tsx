@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Clock, Package } from "lucide-react";
+import { Clock, Package, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/common/empty-state";
@@ -71,7 +71,15 @@ export function ServicesSection() {
                     height={600}
                     loading="lazy"
                   />
-                ) : null}
+                ) : (
+                  /* A service still waiting for its photo keeps the grid even. */
+                  <div
+                    className="flex h-44 w-full items-center justify-center bg-gradient-breeze"
+                    aria-hidden="true"
+                  >
+                    <Waves className="h-10 w-10 text-primary/40" />
+                  </div>
+                )}
 
                 <CardContent className="flex flex-1 flex-col gap-3 p-5">
                   <h3 className="flex flex-wrap items-center gap-2 font-display text-lg font-bold text-foreground">
