@@ -72,14 +72,24 @@ demo admin to promote yourself.
 
 ## Roles and permissions
 
-| Capability | Customer | Staff | Owner |
+The shop runs with two people: the **seller**, who is at the counter and does the
+work, and the **owner**, who is abroad and uses LabaFlow to **monitor stock and
+sales**. That is what the split below reflects.
+
+| Capability | Customer | Seller (staff) | Owner (admin) |
 |---|---|---|---|
 | Own orders, receipts, notifications, chat | Yes | — | — |
 | Counter queue, status updates, payments, receipts, customer chat | — | Yes | Yes |
-| Supplies, stock movements | — | Record movements | Full management |
-| Services, prices, consumption rules | — | — | Yes |
-| Reports, staff & roles, FAQ, shop settings | — | — | Yes |
-| Register / deactivate RFID readers | — | View, link tags | Yes |
+| Supplies, stock movements, reorder levels | — | Yes | Yes |
+| Services, prices, consumption rules | — | Yes | Yes |
+| FAQ entries, shop settings, RFID readers | — | Yes | Yes |
+| Sales reports (daily / weekly / monthly, by channel) | — | — | Yes |
+| Staff accounts and roles | — | — | Yes |
+
+The owner keeps the monitoring view: their dashboard carries the live stock levels
+with each supply's percentage, and the sales reports are theirs alone. Everything
+operational — prices, supplies, settings, FAQs — sits with the seller, so the shop
+never waits on someone in another time zone.
 
 Enforcement lives in the database (row level security plus security-definer
 functions) and in the backend functions. The web app's routing guard is only a

@@ -58,20 +58,22 @@ export const manageNav: NavGroup[] = [
     ],
   },
   {
+    // Everything the shop needs to run day to day belongs to the seller.
     title: "Shop operations",
     items: [
       { label: "Supplies & stock", to: "/manage/inventory", icon: Boxes },
-      { label: "Services & prices", to: "/manage/services", icon: Package, adminOnly: true },
-      { label: "Sales reports", to: "/manage/reports", icon: Users, adminOnly: true },
+      { label: "Services & prices", to: "/manage/services", icon: Package },
       { label: "RFID readers", to: "/manage/rfid", icon: Radio },
+      { label: "FAQ entries", to: "/manage/faqs", icon: HelpCircle },
+      { label: "Shop settings", to: "/manage/settings", icon: Settings },
     ],
   },
   {
-    title: "Shop administration",
+    // The owner oversees from a distance: sales, and who has access.
+    title: "Owner monitoring",
     items: [
+      { label: "Sales reports", to: "/manage/reports", icon: Users, adminOnly: true },
       { label: "Staff & roles", to: "/manage/staff", icon: UserCog, adminOnly: true },
-      { label: "FAQ entries", to: "/manage/faqs", icon: HelpCircle, adminOnly: true },
-      { label: "Shop settings", to: "/manage/settings", icon: Settings, adminOnly: true },
     ],
   },
 ];

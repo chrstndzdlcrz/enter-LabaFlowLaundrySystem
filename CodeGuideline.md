@@ -82,7 +82,7 @@ Whenever a new module (such as a component, hook, or utility) or a new page is a
 - **Create a subdirectory under the right area of `src/pages/`** (for example `src/pages/manage/inventory/`).
 - **Place the main page component as `index.tsx` inside the subdirectory.**
 - **Register the route in `src/router.tsx`** under the matching area route, give it a semantic `name`, and lazy-load it with `lazy(() => import(...))` wrapped in the shared `withFallback` helper.
-- **Restrict it by role**: customer pages live under `/app`; staff pages under `/manage`; owner-only pages wrap the element in `<AdminOnly>`.
+- **Restrict it by role**: customer pages live under `/app`; the counter and shop-operation pages live under `/manage` and are available to both roles. Wrap only the genuinely owner-level pages (sales reports, staff and roles) in `<AdminOnly>`. The split follows the shop: the seller runs the shop, the owner monitors stock and sales. Row level security enforces the same split, so a page guard is never the security boundary.
 
 ### 2. Adding a New Component
 

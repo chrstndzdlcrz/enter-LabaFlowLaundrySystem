@@ -126,11 +126,7 @@ export const routers = [
       {
         path: "services",
         name: "manageServices",
-        element: withFallback(
-          <AdminOnly>
-            <ManageServices />
-          </AdminOnly>,
-        ),
+        element: withFallback(<ManageServices />),
       },
       {
         path: "reports",
@@ -152,11 +148,7 @@ export const routers = [
       {
         path: "faqs",
         name: "manageFaqs",
-        element: withFallback(
-          <AdminOnly>
-            <ManageFaqs />
-          </AdminOnly>,
-        ),
+        element: withFallback(<ManageFaqs />),
       },
       {
         path: "staff",
@@ -170,11 +162,7 @@ export const routers = [
       {
         path: "settings",
         name: "manageSettings",
-        element: withFallback(
-          <AdminOnly>
-            <ManageSettings />
-          </AdminOnly>,
-        ),
+        element: withFallback(<ManageSettings />),
       },
     ],
   },

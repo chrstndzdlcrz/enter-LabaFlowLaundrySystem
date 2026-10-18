@@ -11,7 +11,6 @@ import { QueryState } from "@/components/common/query-state";
 import { AdjustStockDialog } from "@/components/inventory/adjust-stock-dialog";
 import { ItemFormDialog } from "@/components/inventory/item-form-dialog";
 import { listInventory, listMovements } from "@/lib/api/inventory";
-import { useAuth } from "@/hooks/use-auth";
 import { formatDateTime, formatQuantity } from "@/lib/format";
 import { packSummary, stockPercent, stockTone, type StockTone } from "@/lib/pricing";
 
@@ -33,7 +32,6 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 export default function ManageInventory() {
-  const { isAdmin } = useAuth();
   const [itemFilter, setItemFilter] = useState<string>(ALL_ITEMS);
 
   const inventoryQuery = useQuery({ queryKey: ["inventory"], queryFn: listInventory });
@@ -49,8 +47,8 @@ export default function ManageInventory() {
     <div className="space-y-6">
       <PageHeader
         title="Supplies & stock"
-        description="Soap and everything else the shop consumes, how full each supply is, and the reorder level the owner sets."
-        actions={isAdmin ? <ItemFormDialog /> : null}
+        description="Soap and everything else the shop consumes, how full each supply is, and the reorder level you keep."
+        actions={<ItemFormDialog />}
       />
 
       {lowStock.length > 0 ? (
@@ -74,12 +72,8 @@ export default function ManageInventory() {
         isEmpty={items.length === 0}
         emptyIcon={Boxes}
         emptyTitle="No supplies tracked yet"
-        emptyDescription={
-          isAdmin
-            ? "Add the supplies the shop uses so stock and consumption can be tracked."
-            : "Ask the shop owner to add the supplies the shop consumes."
-        }
-        emptyAction={isAdmin ? <ItemFormDialog /> : undefined}
+        emptyDescription="Add the supplies the shop uses so stock and consumption can be tracked."
+        emptyAction={<ItemFormDialog />}
       >
         <div className="overflow-x-auto rounded-2xl border border-border bg-card">
           <Table>
@@ -154,16 +148,14 @@ export default function ManageInventory() {
                     <TableCell>
                       <div className="flex flex-wrap items-center justify-end gap-2">
                         <AdjustStockDialog item={item} />
-                        {isAdmin ? (
-                          <ItemFormDialog
-                            item={item}
-                            trigger={
-                              <Button variant="ghost" size="sm">
-                                Edit
-                              </Button>
-                            }
-                          />
-                        ) : null}
+                        <ItemFormDialog
+                          item={item}
+                          trigger={
+                            <Button variant="ghost" size="sm">
+                              Edit
+                            </Button>
+                          }
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

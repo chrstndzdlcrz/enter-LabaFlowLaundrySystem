@@ -24,7 +24,6 @@ import {
   setRfidTagActive,
 } from "@/lib/api/rfid";
 import { listOrders } from "@/lib/api/orders";
-import { useAuth } from "@/hooks/use-auth";
 import { alertError, confirmAction, errorMessageFrom, flashSuccess } from "@/lib/alerts";
 import { formatDateTime, formatRelative } from "@/lib/format";
 
@@ -39,7 +38,6 @@ const RESULT_TONES: Record<string, "success" | "warning" | "danger" | "neutral">
 };
 
 export default function ManageRfid() {
-  const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [deviceLabel, setDeviceLabel] = useState("");
   const [deviceLocation, setDeviceLocation] = useState("");
@@ -243,7 +241,6 @@ export default function ManageRfid() {
                       <TableCell className="text-right">
                         <Switch
                           checked={device.is_active}
-                          disabled={!isAdmin}
                           onCheckedChange={(checked) => toggleDevice.mutate({ id: device.id, isActive: checked })}
                           aria-label={`Activate ${device.label}`}
                         />
@@ -254,8 +251,7 @@ export default function ManageRfid() {
               </Table>
             </QueryState>
 
-            {isAdmin ? (
-              <div className="space-y-3 rounded-xl border border-border p-4">
+            <div className="space-y-3 rounded-xl border border-border p-4">
                 <p className="font-display text-sm font-semibold text-foreground">Register a reader</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -283,11 +279,6 @@ export default function ManageRfid() {
                   {addDevice.isPending ? "Registering…" : "Register reader"}
                 </Button>
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Only the shop owner can register or deactivate readers.
-              </p>
-            )}
           </CardContent>
         </Card>
 

@@ -1,0 +1,35 @@
+-- Shift the day-to-day admin work to the seller, leaving the owner to monitor
+-- stock and sales.
+--
+-- The policies are renamed (not dropped/recreated) so nothing is ever
+-- unprotected, even for an instant:
+--   seller (staff)  -> services, consumption rules, supplies, FAQs, shop settings, RFID
+--   owner (admin)   -> sales reports, staff & roles  (unchanged)
+
+alter policy services_admin_write on public.services rename to services_staff_write;
+alter policy services_staff_write on public.services
+  using (public.is_staff()) with check (public.is_staff());
+
+alter policy service_consumables_admin_write on public.service_consumables
+  rename to service_consumables_staff_write;
+alter policy service_consumables_staff_write on public.service_consumables
+  using (public.is_staff()) with check (public.is_staff());
+
+alter policy inventory_items_admin_write on public.inventory_items
+  rename to inventory_items_staff_write;
+alter policy inventory_items_staff_write on public.inventory_items
+  using (public.is_staff()) with check (public.is_staff());
+
+alter policy faqs_admin_write on public.faqs rename to faqs_staff_write;
+alter policy faqs_staff_write on public.faqs
+  using (public.is_staff()) with check (public.is_staff());
+
+alter policy shop_settings_update_admin on public.shop_settings
+  rename to shop_settings_update_staff;
+alter policy shop_settings_update_staff on public.shop_settings
+  using (public.is_staff()) with check (public.is_staff());
+
+alter policy rfid_devices_admin_write on public.rfid_devices
+  rename to rfid_devices_staff_write;
+alter policy rfid_devices_staff_write on public.rfid_devices
+  using (public.is_staff()) with check (public.is_staff());
