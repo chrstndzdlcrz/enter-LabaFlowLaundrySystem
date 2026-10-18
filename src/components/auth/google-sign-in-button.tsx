@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { errorMessageFrom } from "@/lib/alerts";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
@@ -41,10 +40,15 @@ export function GoogleSignInButton({ label = "Continue with Google" }: { label?:
       if (error) throw error;
     } catch (error) {
       setPending(false);
+      // The technical cause (usually Google refusing an origin that is not yet
+      // allowed for this OAuth client) stays in the console; the customer gets
+      // something they can act on.
+      console.error("Lab a Day: Google sign-in could not start", error);
       await Swal.fire({
-        icon: "error",
-        title: "Google sign-in could not start",
-        text: errorMessageFrom(error, "Google sign-in is not available right now."),
+        icon: "info",
+        title: "Google sign-in is not available here yet",
+        text: "You can still create an account or sign in with your email and password — everything else works normally.",
+        confirmButtonText: "Use email instead",
         confirmButtonColor: "hsl(191, 85%, 33%)",
       });
     }
