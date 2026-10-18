@@ -162,8 +162,17 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="border-t border-border/70 py-4 text-center text-xs text-muted-foreground">
-          LabaFlow for {settings?.shop_name ?? "Lab-a-Day Laundry Shop"} — walk-in and drop-off counter service.
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-border/70 py-4 text-center text-xs text-muted-foreground">
+          <span>
+            LabaFlow for {settings?.shop_name ?? "Lab-a-Day Laundry Shop"} — walk-in and drop-off counter
+            service.
+          </span>
+          <Link to="/privacy" className="transition-colors hover:text-foreground">
+            Privacy policy
+          </Link>
+          <Link to="/terms" className="transition-colors hover:text-foreground">
+            Terms of service
+          </Link>
         </div>
       </footer>
     </div>

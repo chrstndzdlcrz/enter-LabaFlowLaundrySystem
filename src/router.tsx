@@ -7,6 +7,8 @@ import Landing from "./pages/landing";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import RoleRedirect from "./pages/auth/redirect";
+import PrivacyPolicy from "./pages/legal/privacy";
+import TermsOfService from "./pages/legal/terms";
 import NotFound from "./pages/NotFound";
 
 /**
@@ -75,6 +77,18 @@ export const routers = [
     path: "/register",
     name: "register",
     element: <Register />,
+  },
+  {
+    // Referenced by the Google sign-in consent screen as the privacy policy.
+    path: "/privacy",
+    name: "privacyPolicy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    // Referenced by the Google sign-in consent screen as the terms of service.
+    path: "/terms",
+    name: "termsOfService",
+    element: <TermsOfService />,
   },
   {
     path: "/dashboard",
