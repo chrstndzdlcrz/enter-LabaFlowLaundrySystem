@@ -10,7 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-reports
+# Only the template's i18n report output directory, not any folder called "reports".
+/reports/
 *.local
 
 # Editor directories and files

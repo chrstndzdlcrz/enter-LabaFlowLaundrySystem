@@ -28,7 +28,7 @@ const ManageOrderDetail = lazy(() => import("./pages/manage/order-detail"));
 const ManageBookings = lazy(() => import("./pages/manage/bookings"));
 const ManageInventory = lazy(() => import("./pages/manage/inventory"));
 const ManageServices = lazy(() => import("./pages/manage/services"));
-const ManageReports = lazy(() => import("./pages/manage/reports"));
+const ManageReports = lazy(() => import("./pages/manage/sales"));
 const ManageReceipts = lazy(() => import("./pages/manage/receipts"));
 const ManageReceiptDetail = lazy(() => import("./pages/manage/receipt-detail"));
 const ManageChat = lazy(() => import("./pages/manage/chat"));

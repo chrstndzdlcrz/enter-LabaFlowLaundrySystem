@@ -23,7 +23,7 @@ project-root/
   │   │   ├── notifications/  # bell, permission card
   │   │   ├── orders/         # tables, timeline, status/payment dialogs, service picker
   │   │   ├── receipts/       # shared printable e-receipt
-  │   │   ├── reports/        # sales chart
+  │   │   ├── sales/          # sales chart
   │   │   ├── services/       # service and consumption-rule dialogs
   │   │   └── ui/             # Prebuilt shadcn components and design-system primitives
   │   ├── hooks/              # One hook per file: use-auth, use-chat, use-notifications, use-mobile
@@ -41,7 +41,7 @@ project-root/
   │   │   ├── auth/           # login, register, role redirect
   │   │   ├── customer/       # dashboard, book, orders, receipts, notifications, chat, profile
   │   │   └── manage/         # staff + admin: dashboard, orders, bookings, inventory, services,
-  │   │                       # reports, receipts, chat, rfid, faqs, staff, settings
+  │   │                       # sales reports, receipts, chat, rfid, faqs, staff, settings
   │   ├── providers/          # auth-context.ts (context) + auth-provider.tsx (component)
   │   ├── App.tsx             # Provider composition + offline shell registration
   │   ├── router.tsx          # Route table, area layout routes, lazy page loading
