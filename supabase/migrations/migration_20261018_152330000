@@ -1,0 +1,38 @@
+-- LabaFlow: the shop's final landing-page catalogue, turnaround and contact details.
+-- Deactivated rather than deleted, so any order that used them keeps its history
+-- and the owner can switch them back on in Services & prices at any time.
+update public.services
+   set is_active = false, updated_at = now()
+ where name in ('Wash Only', 'Dry Only', 'Press / Steam Iron', 'Dry Cleaning');
+
+-- Turnaround the shop actually quotes, plus a photo for each service.
+update public.services
+   set estimated_hours = 5,
+       image_url = 'https://cdn.enter.pro/resources/uid_100650785/labaflow-service-wash-dry-fold_a8b4eb51.png',
+       updated_at = now()
+ where name = 'Wash, Dry & Fold';
+
+update public.services
+   set estimated_hours = 7,
+       image_url = 'https://cdn.enter.pro/resources/uid_100650785/labaflow-service-bedsheet_354908f1.png',
+       updated_at = now()
+ where name = 'Bedsheet';
+
+update public.services
+   set estimated_hours = 7,
+       image_url = 'https://cdn.enter.pro/resources/uid_100650785/labaflow-service-comforter_934848ea.png',
+       updated_at = now()
+ where name = 'Comforter';
+
+-- Shop address and contact number, as given by the owner.
+update public.shop_settings
+   set address = 'Purok 2, Cosme Street, Pagsanjan, Laguna',
+       phone = '09615150075',
+       updated_at = now()
+ where id;
+
+-- The published turnaround answer must match the turnaround above.
+update public.faqs
+   set answer = 'Wash, dry and fold is ready in about 5 hours, and bedsheets and comforters in about 7 hours. You can follow the exact status of your order in your account.',
+       updated_at = now()
+ where question = 'How long does a regular wash take?';

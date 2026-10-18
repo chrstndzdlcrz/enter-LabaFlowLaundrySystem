@@ -51,8 +51,20 @@ export function ServicePicker({
         return (
           <Card
             key={service.id}
-            className={selected ? "border-primary/50 bg-primary/5 shadow-sm" : "border-border/80"}
+            className={selected ? "overflow-hidden border-primary/50 bg-primary/5 shadow-sm" : "overflow-hidden border-border/80"}
           >
+            {service.image_url ? (
+              <img
+                src={service.image_url}
+                crossOrigin="anonymous"
+                alt=""
+                aria-hidden="true"
+                className="h-28 w-full object-cover"
+                width={800}
+                height={600}
+                loading="lazy"
+              />
+            ) : null}
             <CardContent className="space-y-3 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">

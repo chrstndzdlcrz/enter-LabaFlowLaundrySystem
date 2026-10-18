@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LABAFLOW_IMAGES } from "@/lib/assets";
 
 const HIGHLIGHTS = [
-  { icon: Clock, label: "24–48 hour turnaround", detail: "Estimated per service" },
+  { icon: Clock, label: "Ready in 5–7 hours", detail: "Wash in about 5, bedding in about 7" },
   { icon: Droplets, label: "Sorted and weighed", detail: "Recorded on your order" },
   { icon: BadgeCheck, label: "Tracked end to end", detail: "Status you can follow" },
 ];

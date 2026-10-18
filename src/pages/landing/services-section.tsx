@@ -1,28 +1,26 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Package, Timer } from "lucide-react";
+import { Clock, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/common/empty-state";
 import { LoadingState } from "@/components/common/loading-state";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import { listServices } from "@/lib/api/services";
-import { formatCurrency } from "@/lib/format";
 import { servicePricingSummary } from "@/lib/pricing";
 
+/**
+ * The shop's services, shown as one list with a photo per service. Categories are
+ * deliberately not used: the shop sells a short, clear list of services.
+ */
 export function ServicesSection() {
   const { data: services, isLoading } = useQuery({
     queryKey: ["services", "public"],
     queryFn: () => listServices(),
   });
 
-  const grouped = (services ?? []).reduce<Record<string, typeof services>>((acc, service) => {
-    const key = service.category?.trim() || "Our services";
-    acc[key] = [...(acc[key] ?? []), service];
-    return acc;
-  }, {});
-
-  const hasPlaceholder = (services ?? []).some((service) => service.is_placeholder);
+  const items = services ?? [];
+  const hasPlaceholder = items.some((service) => service.is_placeholder);
 
   return (
     <section id="services" className="relative px-4 py-16 sm:px-6">
@@ -45,7 +43,7 @@ export function ServicesSection() {
 
         {isLoading ? (
           <LoadingState label="Loading the price list…" />
-        ) : (services ?? []).length === 0 ? (
+        ) : items.length === 0 ? (
           <EmptyState
             icon={Package}
             title="The price list is being set up"
@@ -57,33 +55,45 @@ export function ServicesSection() {
             }
           />
         ) : (
-          <div className="space-y-10">
-            {Object.entries(grouped).map(([category, items]) => (
-              <div key={category} className="space-y-4">
-                <h3 className="font-display text-lg font-bold text-foreground">{category}</h3>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {(items ?? []).map((service) => (
-                    <Card key={service.id} className="flex h-full flex-col border-border/80 transition-shadow hover:shadow-elegant">
-                      <CardHeader className="gap-2 pb-3">
-                        <CardTitle className="flex flex-wrap items-center gap-2 font-display text-lg">
-                          {service.name}
-                          {service.is_placeholder ? <PlaceholderBadge /> : null}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground">{service.description}</p>
-                      </CardHeader>
-                      <CardContent className="mt-auto space-y-3">
-                        <p className="font-display text-base font-bold text-primary">
-                          {servicePricingSummary(service)}
-                        </p>
-                        <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Timer className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                          Around {service.estimated_hours} hours to process
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((service) => (
+              <Card
+                key={service.id}
+                className="flex h-full flex-col overflow-hidden border-border/80 transition-shadow hover:shadow-elegant"
+              >
+                {service.image_url ? (
+                  <img
+                    src={service.image_url}
+                    crossOrigin="anonymous"
+                    alt={`${service.name} at Lab-a-Day Laundry Shop`}
+                    className="h-44 w-full object-cover"
+                    width={800}
+                    height={600}
+                    loading="lazy"
+                  />
+                ) : null}
+
+                <CardContent className="flex flex-1 flex-col gap-3 p-5">
+                  <h3 className="flex flex-wrap items-center gap-2 font-display text-lg font-bold text-foreground">
+                    {service.name}
+                    {service.is_placeholder ? <PlaceholderBadge /> : null}
+                  </h3>
+
+                  {service.description ? (
+                    <p className="text-sm text-muted-foreground">{service.description}</p>
+                  ) : null}
+
+                  <p className="mt-auto font-display text-base font-bold text-primary">
+                    {servicePricingSummary(service)}
+                  </p>
+
+                  <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                    Ready in about {service.estimated_hours} hour
+                    {service.estimated_hours === 1 ? "" : "s"}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
