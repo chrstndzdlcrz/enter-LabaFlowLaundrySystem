@@ -12,6 +12,7 @@ import { OrderItemsTable } from "@/components/orders/order-items-table";
 import { OrderTimeline } from "@/components/orders/order-timeline";
 import { supabase } from "@/integrations/supabase/client";
 import { cancelMyOrder, getOrder, getOrderHistory, getReceiptForOrder } from "@/lib/api/orders";
+import { realtimeTopic } from "@/lib/realtime";
 import { confirmAction, alertError, alertSuccess, errorMessageFrom } from "@/lib/alerts";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 
@@ -42,7 +43,7 @@ export default function CustomerOrderDetail() {
   useEffect(() => {
     if (!orderId) return;
     const channel = supabase
-      .channel(`order-${orderId}`)
+      .channel(realtimeTopic(`order-${orderId}`))
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${orderId}` },

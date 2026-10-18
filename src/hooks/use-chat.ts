@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { listMessages, markConversationRead, sendMessage } from "@/lib/api/chat";
+import { realtimeTopic } from "@/lib/realtime";
 
 /** Messages for one conversation, kept live with Realtime. */
 export function useChat(conversationId: string | null | undefined) {
@@ -17,7 +18,7 @@ export function useChat(conversationId: string | null | undefined) {
     if (!conversationId) return;
 
     const channel = supabase
-      .channel(`messages-${conversationId}`)
+      .channel(realtimeTopic(`messages-${conversationId}`))
       .on(
         "postgres_changes",
         {

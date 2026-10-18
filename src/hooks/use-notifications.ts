@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { realtimeTopic } from "@/lib/realtime";
 import {
   countUnreadNotifications,
   listNotifications,
@@ -49,7 +50,7 @@ export function useNotifications() {
     if (!user?.id) return;
 
     const channel = supabase
-      .channel(`notifications-${user.id}`)
+      .channel(realtimeTopic(`notifications-${user.id}`))
       .on(
         "postgres_changes",
         {
