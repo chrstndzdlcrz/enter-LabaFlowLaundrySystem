@@ -15,7 +15,9 @@ name: Web build and deploy
 
 on:
   push:
-    branches: [main]
+    # `enter-main` is the branch the Enter GitHub sync pushes to; `main` covers a
+    # repository you connect yourself. Both deploy automatically.
+    branches: [main, enter-main]
   workflow_dispatch:
 
 permissions:

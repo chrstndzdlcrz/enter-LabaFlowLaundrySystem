@@ -15,12 +15,12 @@ name: Mobile app build (Flutter)
 # This workflow has NOT been executed or verified from the development sandbox:
 # no Flutter SDK is available there, so the mobile source has never been compiled.
 
+# This workflow is manual-only on purpose. It cannot succeed until the Flutter
+# platform folders exist, which requires running `flutter create` once inside
+# mobile/ (see mobile/README.md). Running it automatically would only produce a
+# failing run on every push, so trigger it by hand once that setup is done:
+#   Actions -> "Mobile app build (Flutter)" -> Run workflow.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'mobile/**'
-      - '.github/workflows/mobile-build.yml'
   workflow_dispatch:
 
 jobs:
