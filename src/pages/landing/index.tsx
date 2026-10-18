@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { fetchShopSettings } from "@/lib/api/settings";
 import { CtaSection } from "./cta-section";
+import { EquipmentSection } from "./equipment-section";
 import { FaqSection } from "./faq-section";
 import { HeroSection } from "./hero-section";
 import { HowItWorksSection } from "./how-it-works-section";
@@ -14,6 +15,7 @@ const Landing = () => {
     <PublicLayout>
       <HeroSection shopName={settings?.shop_name ?? "Lab-a-Day Laundry Shop"} />
       <ServicesSection />
+      <EquipmentSection />
       <HowItWorksSection />
       <FaqSection />
       <CtaSection settings={settings} />

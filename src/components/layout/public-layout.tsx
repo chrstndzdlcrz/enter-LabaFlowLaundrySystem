@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 const LINKS = [
   { label: "Services & prices", href: "#services" },
+  { label: "Our equipment", href: "#equipment" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Questions", href: "#faq" },
 ];

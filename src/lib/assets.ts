@@ -4,4 +4,5 @@ export const LABAFLOW_IMAGES = {
   foldedLinens: "https://cdn.enter.pro/resources/uid_100650785/labaflow-folded-linens_2ec3fcaa.png",
   counterDropoff: "https://cdn.enter.pro/resources/uid_100650785/labaflow-counter-dropoff_fc1efbde.png",
   bubbleTexture: "https://cdn.enter.pro/resources/uid_100650785/labaflow-bubble-texture_59366950.png",
+  equipment: "https://cdn.enter.pro/resources/uid_100650785/labaflow-equipment_80737221.png",
 };
