@@ -1,0 +1,59 @@
+-- Google sign-in now fills the customer's profile: the display name, the email
+-- and the profile photo that Google provides.
+--
+-- Details the customer typed themselves are never overwritten — Google only fills
+-- what is still empty.
+create or replace function public.ensure_profile()
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_admin_exists boolean;
+  v_email text;
+  v_google_name text;
+  v_google_avatar text;
+  v_row public.profiles;
+begin
+  if v_uid is null then
+    raise exception 'Not authenticated' using errcode = '42501';
+  end if;
+
+  v_email := auth.jwt() ->> 'email';
+  v_google_name := coalesce(
+    nullif(btrim(auth.jwt() -> 'user_metadata' ->> 'full_name'), ''),
+    nullif(btrim(auth.jwt() -> 'user_metadata' ->> 'name'), '')
+  );
+  v_google_avatar := coalesce(
+    nullif(btrim(auth.jwt() -> 'user_metadata' ->> 'avatar_url'), ''),
+    nullif(btrim(auth.jwt() -> 'user_metadata' ->> 'picture'), '')
+  );
+
+  select exists (select 1 from public.profiles where role = 'admin' and is_active) into v_admin_exists;
+
+  insert into public.profiles (id, email, full_name, phone, avatar_url, role)
+  values (
+    v_uid,
+    v_email,
+    coalesce(v_google_name, split_part(coalesce(v_email, 'New user'), '@', 1)),
+    nullif(btrim(auth.jwt() -> 'user_metadata' ->> 'phone'), ''),
+    v_google_avatar,
+    case when v_admin_exists then 'customer' else 'admin' end
+  )
+  on conflict (id) do nothing;
+
+  -- A Google sign-in also refreshes the name and photo on later sign-ins, but only
+  -- where the profile is still blank, so nothing the customer typed is lost.
+  update public.profiles p
+     set full_name = coalesce(nullif(btrim(p.full_name), ''), v_google_name),
+         avatar_url = coalesce(nullif(btrim(p.avatar_url), ''), v_google_avatar)
+   where p.id = v_uid
+     and (nullif(btrim(coalesce(p.full_name, '')), '') is null
+          or nullif(btrim(coalesce(p.avatar_url, '')), '') is null);
+
+  select * into v_row from public.profiles where id = v_uid;
+  return v_row;
+end;
+$$;

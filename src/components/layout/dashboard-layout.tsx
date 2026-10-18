@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut, Menu, ShieldCheck, User as UserIcon, Waves } from "lucide-react";
 import { useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,6 +70,9 @@ function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="gap-2 px-2">
           <Avatar className="h-8 w-8">
+            {profile?.avatar_url ? (
+              <AvatarImage src={profile.avatar_url} alt="" crossOrigin="anonymous" />
+            ) : null}
             <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
               {initialsFrom(profile?.full_name ?? profile?.email)}
             </AvatarFallback>

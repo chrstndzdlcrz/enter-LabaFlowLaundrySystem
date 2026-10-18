@@ -122,6 +122,21 @@ export default function CustomerProfile() {
                 </p>
               ) : null}
 
+              {form.watch("avatar_url") ? (
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
+                  <img
+                    src={form.watch("avatar_url")}
+                    crossOrigin="anonymous"
+                    alt="Your profile photo"
+                    className="h-14 w-14 rounded-full border border-border object-cover"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    This is the photo shown on your account. If you signed in with Google, it was taken
+                    from your Google profile automatically.
+                  </p>
+                </div>
+              ) : null}
+
               <Form {...form}>
                 <FormField
                   control={form.control}
