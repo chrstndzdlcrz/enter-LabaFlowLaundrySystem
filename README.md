@@ -109,12 +109,57 @@ Rules that are enforced in the database rather than in code:
 - Roles, account status, order ownership and receipt ownership are all checked
   server-side.
 
+### The shop's price list and pricing model
+
+Prices are tiered: a base quantity is covered by the base price, anything above it
+is charged per extra unit, and an optional cap limits one wash.
+
+| Service | Price rule | Cap per wash |
+|---|---|---|
+| Wash, Dry & Fold | ₱180 for the first 7 kg, then ₱25 per extra kilo | 10 kg |
+| Bedsheet | ₱190 for the first 5 kg, then ₱38 per extra kilo | 9 kg |
+| Comforter | ₱200 per piece | none |
+| Wash Only, Dry Only, Press / Steam Iron, Dry Cleaning, Express Rush | still placeholder prices — the owner edits them | — |
+
+A booking below the base weight is still charged the base price (the minimum
+charge), and booking above the cap is refused with a message asking for a separate
+load. Every line stores the rule that priced it, so a receipt can show
+"First 7 kg at 180.00 + 1 extra at 25.00" even after the price list changes.
+
+The server computes every line; the browser and the mobile app mirror the same
+formula only to show a preview, and that mirror is verified against the server
+(`src/lib/pricing.ts`).
+
+### Soap and supply inventory
+
+Soap is bought by the pack and consumed by the millilitre, so stock is tracked in
+ml with the pack size recorded alongside it:
+
+| Supply | Pack | Consumption |
+|---|---|---|
+| Surf Liquid Detergent | 2500 ml pack | 100 ml per load |
+| Surf Fabric Conditioner | 1600 ml pack | 100 ml per load |
+| Zonrox Color Safe Bleach | 900 ml bottle | 10 ml per load |
+
+A "per wash" rule deducts a fixed amount for every load a service represents, so a
+10 kg wash-dry-fold costs one load while three separate comforters count as three.
+Stock is deducted when an order reaches the stage chosen in shop settings (In
+Progress by default), and the movement log records exactly what came off which
+supply for which order.
+
+Each soap shows its **stock status as a percentage** of the level the shop wants to
+keep (`full_stock_level`, pre-set to one full pack), with a bar and a colour band:
+green above 60%, amber below it, red below 25%, plus a separate “Reorder” flag once
+the quantity reaches the reorder level. The reorder levels shipped as a starting
+point are one fifth of a pack and are meant to be adjusted to the shop's own way of
+working.
+
 ### Business values are the shop's, not the app's
 
-Seeded services, prices, stock levels and consumption rates are **marked as
-placeholders** and labelled “Placeholder — edit” in the owner's screens. The app
-never invents a rate: with no consumption rule configured for a service, no stock
-is deducted at all.
+The prices, pack sizes and consumption rates above come from the shop. Anything
+still flagged “Placeholder — edit” (the remaining services, and the dry-cleaning
+and pressing consumption rules) is a starting point the owner replaces, and with no
+consumption rule configured for a service no stock is deducted at all.
 
 ---
 

@@ -1,15 +1,25 @@
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import type { Service } from "@/lib/api/types";
-import { UNIT_SUFFIX, UNIT_QUANTITY_LABEL } from "@/lib/constants";
+import { UNIT_QUANTITY_LABEL } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";
+import {
+  clampQuantity,
+  serviceLineTotal,
+  serviceMaxQuantity,
+  servicePricingSummary,
+  serviceQuantityHint,
+} from "@/lib/pricing";
 
 export type Quantities = Record<string, number>;
 
-/** Service list with per-unit quantity controls. Used for booking and walk-ins. */
+/**
+ * Service list with per-wash quantity controls. Prices follow the shop's own
+ * tiers (a base quantity, then each extra unit) and never exceed the per-wash cap.
+ */
 export function ServicePicker({
   services,
   quantities,
@@ -19,10 +29,12 @@ export function ServicePicker({
   quantities: Quantities;
   onChange: (next: Quantities) => void;
 }) {
-  const setQuantity = (serviceId: string, value: number) => {
+  const setQuantity = (service: Service, raw: string | number) => {
+    const parsed = typeof raw === "number" ? raw : Number(raw);
     const next = { ...quantities };
-    if (value <= 0) delete next[serviceId];
-    else next[serviceId] = value;
+    const value = clampQuantity(service, Number.isFinite(parsed) ? parsed : 0);
+    if (value <= 0) delete next[service.id];
+    else next[service.id] = value;
     onChange(next);
   };
 
@@ -31,6 +43,11 @@ export function ServicePicker({
       {services.map((service) => {
         const quantity = quantities[service.id] ?? 0;
         const selected = quantity > 0;
+        const max = serviceMaxQuantity(service);
+        const atMax = max !== null && quantity >= max;
+        const step = service.unit === "piece" ? 1 : 0.5;
+        const lineTotal = serviceLineTotal(service, quantity);
+
         return (
           <Card
             key={service.id}
@@ -46,9 +63,11 @@ export function ServicePicker({
                   <p className="text-xs text-muted-foreground">{service.description}</p>
                 </div>
                 <p className="shrink-0 text-right">
-                  <span className="block font-display font-bold text-primary">{formatCurrency(service.price)}</span>
+                  <span className="block font-display font-bold text-primary">
+                    {formatCurrency(service.price)}
+                  </span>
                   <span className="block text-[11px] text-muted-foreground">
-                    {UNIT_SUFFIX[service.unit] ?? `per ${service.unit}`}
+                    {servicePricingSummary(service).replace(/^\S+\s/, "")}
                   </span>
                 </p>
               </div>
@@ -60,7 +79,7 @@ export function ServicePicker({
                   size="icon"
                   aria-label={`Remove one ${service.name}`}
                   disabled={quantity <= 0}
-                  onClick={() => setQuantity(service.id, Math.max(0, quantity - 1))}
+                  onClick={() => setQuantity(service, quantity - step)}
                 >
                   <Minus className="h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -68,11 +87,12 @@ export function ServicePicker({
                   type="number"
                   inputMode="decimal"
                   min={0}
-                  step={service.unit === "piece" ? 1 : 0.5}
+                  max={max ?? undefined}
+                  step={step}
                   value={quantity === 0 ? "" : quantity}
                   aria-label={`${UNIT_QUANTITY_LABEL[service.unit] ?? "Quantity"} for ${service.name}`}
                   placeholder="0"
-                  onChange={(event) => setQuantity(service.id, Number(event.target.value) || 0)}
+                  onChange={(event) => setQuantity(service, event.target.value)}
                   className="w-24 text-center"
                 />
                 <Button
@@ -80,14 +100,28 @@ export function ServicePicker({
                   variant="outline"
                   size="icon"
                   aria-label={`Add one ${service.name}`}
-                  onClick={() => setQuantity(service.id, quantity + (service.unit === "piece" ? 1 : 0.5))}
+                  disabled={atMax}
+                  onClick={() => setQuantity(service, quantity + step)}
                 >
                   <Plus className="h-4 w-4" aria-hidden="true" />
                 </Button>
                 <span className="ml-auto text-sm font-semibold text-foreground">
-                  {formatCurrency(service.price * quantity)}
+                  {formatCurrency(lineTotal)}
                 </span>
               </div>
+
+              {serviceQuantityHint(service) ? (
+                <p className="text-[11px] leading-snug text-muted-foreground">
+                  {serviceQuantityHint(service)}
+                </p>
+              ) : null}
+
+              {atMax ? (
+                <p className="flex items-center gap-1.5 text-[11px] font-medium text-warning">
+                  <TriangleAlert className="h-3.5 w-3.5" aria-hidden="true" />
+                  That is the maximum for one wash. Book a second load for more.
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         );

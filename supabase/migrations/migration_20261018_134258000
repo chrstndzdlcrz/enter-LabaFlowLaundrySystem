@@ -1,0 +1,98 @@
+-- Receipt snapshots now carry the pricing explanation, so a printed receipt shows
+-- how a tiered line was charged even after the service price changes.
+create or replace function public.handle_payment_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_order public.orders;
+  v_existing numeric := 0;
+  v_paid numeric := 0;
+  v_status text;
+  v_channel text;
+  v_snapshot jsonb;
+begin
+  new.received_by := coalesce(new.received_by, auth.uid());
+
+  select * into v_order from public.orders where id = new.order_id for update;
+  if v_order.id is null then
+    raise exception 'Order not found' using errcode = 'P0002';
+  end if;
+  if v_order.status = 'cancelled' then
+    raise exception 'Cannot record a payment for a cancelled order' using errcode = '22023';
+  end if;
+
+  select coalesce(sum(amount), 0) into v_existing from public.payments where order_id = new.order_id;
+  v_paid := v_existing + new.amount;
+
+  v_status := case when v_paid >= v_order.total_amount then 'paid'
+                   when v_paid > 0 then 'partial'
+                   else 'unpaid' end;
+
+  v_channel := coalesce(new.channel, (
+    select p.channel from public.payments p
+     where p.order_id = new.order_id order by p.paid_at desc limit 1
+  ));
+
+  update public.orders
+     set amount_paid = v_paid,
+         payment_status = v_status,
+         status = case when v_order.status = 'ready_for_pickup' and v_paid >= v_order.total_amount
+                       then 'completed' else v_order.status end,
+         updated_at = now()
+   where id = new.order_id;
+
+  v_snapshot := jsonb_build_object(
+    'shop', (select jsonb_build_object('name', shop_name, 'address', address, 'phone', phone, 'footer', receipt_footer)
+               from public.shop_settings where id),
+    'order_code', v_order.order_code,
+    'customer_name', v_order.customer_name,
+    'customer_phone', v_order.customer_phone,
+    'is_walk_in', v_order.is_walk_in,
+    'created_at', v_order.created_at,
+    'items', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'name', service_name, 'unit', unit, 'quantity', quantity,
+        'unit_price', unit_price, 'line_total', line_total, 'pricing_note', pricing_note))
+      from public.order_items where order_id = v_order.id), '[]'::jsonb),
+    'subtotal', v_order.subtotal,
+    'discount', v_order.discount,
+    'total', v_order.total_amount,
+    'amount_paid', v_paid,
+    'payment_status', v_status,
+    'payments', (
+      select jsonb_agg(jsonb_build_object(
+        'amount', t.amount, 'channel', t.channel,
+        'reference_no', t.reference_no, 'paid_at', t.paid_at))
+      from (
+        select amount, channel, reference_no, paid_at
+          from public.payments where order_id = v_order.id
+        union all
+        select new.amount, new.channel, new.reference_no, new.paid_at
+      ) as t
+    )
+  );
+
+  insert into public.receipts (
+    order_id, receipt_no, issued_by, subtotal, discount, total, amount_paid, channel, is_final, snapshot
+  ) values (
+    v_order.id,
+    'LFD-' || to_char(now(), 'YYYYMM') || '-' || lpad(nextval('public.receipt_no_seq')::text, 4, '0'),
+    auth.uid(), v_order.subtotal, v_order.discount, v_order.total_amount, v_paid,
+    v_channel, v_status = 'paid', v_snapshot
+  )
+  on conflict (order_id) do update
+    set subtotal = excluded.subtotal,
+        discount = excluded.discount,
+        total = excluded.total,
+        amount_paid = excluded.amount_paid,
+        channel = excluded.channel,
+        is_final = excluded.is_final,
+        snapshot = excluded.snapshot,
+        issued_at = now();
+
+  return new;
+end;
+$$;

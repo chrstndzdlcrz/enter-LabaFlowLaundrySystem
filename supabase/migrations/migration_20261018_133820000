@@ -1,0 +1,137 @@
+-- LabaFlow: the shop's own price list and soap stock, replacing the placeholders.
+-- Everything here comes from the shop; nothing is estimated.
+
+-- ---------------------------------------------------------------- soap stock
+-- Renaming keeps the item ids (and therefore every existing recipe and stock
+-- movement) intact while switching the measurement to millilitres.
+update public.inventory_items set
+  name = 'Surf Liquid Detergent',
+  unit = 'ml',
+  quantity = 2500,
+  low_stock_threshold = 500,
+  full_stock_level = 2500,
+  pack_size = 2500,
+  pack_label = 'pack',
+  is_placeholder = false
+where name = 'Detergent Powder';
+
+update public.inventory_items set
+  name = 'Surf Fabric Conditioner',
+  unit = 'ml',
+  quantity = 1600,
+  low_stock_threshold = 320,
+  full_stock_level = 1600,
+  pack_size = 1600,
+  pack_label = 'pack',
+  is_placeholder = false
+where name = 'Fabric Softener';
+
+update public.inventory_items set
+  name = 'Zonrox Color Safe Bleach',
+  unit = 'ml',
+  quantity = 900,
+  low_stock_threshold = 180,
+  full_stock_level = 900,
+  pack_size = 900,
+  pack_label = 'bottle',
+  is_placeholder = false
+where name = 'Bleach';
+
+-- ------------------------------------------------------------------ services
+-- Wash, dry and fold: 7 kg for 180, then 25 per extra kilo, at most 10 kg per wash.
+update public.services set
+  description = 'Wash, dry and fold. First 7 kg for 180.00, then 25.00 per extra kilo. Maximum 10 kg per wash.',
+  category = 'Everyday',
+  unit = 'kg',
+  price = 180.00,
+  base_quantity = 7,
+  increment_quantity = 1,
+  increment_price = 25.00,
+  max_quantity = 10,
+  estimated_hours = 48,
+  is_placeholder = false,
+  sort_order = 10
+where name = 'Wash, Dry & Fold';
+
+-- Bedsheet: 5 kg for 190, then 38 per extra kilo, at most 9 kg per wash.
+insert into public.services (
+  name, description, category, unit, price,
+  base_quantity, increment_quantity, increment_price, max_quantity,
+  estimated_hours, is_placeholder, sort_order
+)
+select
+  'Bedsheet',
+  'Bedsheet wash. First 5 kg for 190.00, then 38.00 per extra kilo. Maximum 9 kg per wash.',
+  'Bedding', 'kg', 190.00, 5, 1, 38.00, 9, 72, false, 35
+where not exists (select 1 from public.services where name = 'Bedsheet');
+
+-- Comforter: 200.00 per piece (no weight tier, no cap).
+update public.services set
+  name = 'Comforter',
+  description = 'Comforter wash and dry, priced at 200.00 per piece.',
+  category = 'Bedding',
+  unit = 'piece',
+  price = 200.00,
+  base_quantity = null,
+  increment_quantity = null,
+  increment_price = null,
+  max_quantity = null,
+  estimated_hours = 72,
+  is_placeholder = false,
+  sort_order = 45
+where name = 'Comforter & Beddings';
+
+-- ------------------------------------------------------- soap per wash rule
+-- 100 ml detergent, 100 ml conditioner and 10 ml bleach for every wash.
+-- One wash covers a full wash cycle, so a quantity inside the service's per-wash
+-- cap counts as a single load.
+update public.service_consumables sc
+   set qty_per_unit = r.qty,
+       unit = 'ml',
+       basis = 'wash',
+       is_placeholder = false
+  from public.services s,
+       public.inventory_items i,
+       (values
+         ('Wash, Dry & Fold', 'Surf Liquid Detergent', 100::numeric),
+         ('Wash, Dry & Fold', 'Surf Fabric Conditioner', 100::numeric),
+         ('Wash, Dry & Fold', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Wash Only', 'Surf Liquid Detergent', 100::numeric),
+         ('Wash Only', 'Surf Fabric Conditioner', 100::numeric),
+         ('Wash Only', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Bedsheet', 'Surf Liquid Detergent', 100::numeric),
+         ('Bedsheet', 'Surf Fabric Conditioner', 100::numeric),
+         ('Bedsheet', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Comforter', 'Surf Liquid Detergent', 100::numeric),
+         ('Comforter', 'Surf Fabric Conditioner', 100::numeric),
+         ('Comforter', 'Zonrox Color Safe Bleach', 10::numeric)
+       ) as r(service_name, item_name, qty)
+ where sc.service_id = s.id
+   and sc.inventory_item_id = i.id
+   and s.name = r.service_name
+   and i.name = r.item_name;
+
+insert into public.service_consumables (service_id, inventory_item_id, qty_per_unit, unit, basis, is_placeholder)
+select s.id, i.id, r.qty, 'ml', 'wash', false
+  from public.services s,
+       public.inventory_items i,
+       (values
+         ('Wash, Dry & Fold', 'Surf Liquid Detergent', 100::numeric),
+         ('Wash, Dry & Fold', 'Surf Fabric Conditioner', 100::numeric),
+         ('Wash, Dry & Fold', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Wash Only', 'Surf Liquid Detergent', 100::numeric),
+         ('Wash Only', 'Surf Fabric Conditioner', 100::numeric),
+         ('Wash Only', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Bedsheet', 'Surf Liquid Detergent', 100::numeric),
+         ('Bedsheet', 'Surf Fabric Conditioner', 100::numeric),
+         ('Bedsheet', 'Zonrox Color Safe Bleach', 10::numeric),
+         ('Comforter', 'Surf Liquid Detergent', 100::numeric),
+         ('Comforter', 'Surf Fabric Conditioner', 100::numeric),
+         ('Comforter', 'Zonrox Color Safe Bleach', 10::numeric)
+       ) as r(service_name, item_name, qty)
+ where s.name = r.service_name
+   and i.name = r.item_name
+   and not exists (
+     select 1 from public.service_consumables sc
+      where sc.service_id = s.id and sc.inventory_item_id = i.id
+   );

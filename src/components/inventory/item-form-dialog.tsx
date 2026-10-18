@@ -17,20 +17,23 @@ import { createInventoryItem, updateInventoryItem } from "@/lib/api/inventory";
 import type { InventoryItem } from "@/lib/api/types";
 import { alertError, errorMessageFrom, flashSuccess } from "@/lib/alerts";
 
-/** Create or edit a supply item and its reorder level. */
-export function ItemFormDialog({
-  item,
-  trigger,
-}: {
-  item?: InventoryItem;
-  trigger?: React.ReactNode;
-}) {
+/**
+ * Create or edit a supply item.
+ *
+ * Supplies are usually bought by the pack but consumed in smaller units (a 2500
+ * ml detergent pack used 100 ml at a time), so the pack size and the level you
+ * want to keep are recorded here and drive the stock percentage.
+ */
+export function ItemFormDialog({ item, trigger }: { item?: InventoryItem; trigger?: React.ReactNode }) {
   const editing = Boolean(item);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [unit, setUnit] = useState("kg");
   const [quantity, setQuantity] = useState("0");
   const [threshold, setThreshold] = useState("5");
+  const [fullLevel, setFullLevel] = useState("");
+  const [packSize, setPackSize] = useState("");
+  const [packLabel, setPackLabel] = useState("");
   const [cost, setCost] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -41,6 +44,9 @@ export function ItemFormDialog({
     setUnit(item?.unit ?? "kg");
     setQuantity(String(item?.quantity ?? 0));
     setThreshold(String(item?.low_stock_threshold ?? 5));
+    setFullLevel(item?.full_stock_level ? String(item.full_stock_level) : "");
+    setPackSize(item?.pack_size ? String(item.pack_size) : "");
+    setPackLabel(item?.pack_label ?? "");
     setCost(item?.cost_per_unit ? String(item.cost_per_unit) : "");
     setFormError(null);
   }, [open, item]);
@@ -52,14 +58,27 @@ export function ItemFormDialog({
       if (!Number.isFinite(parsedThreshold) || parsedThreshold < 0) {
         throw new Error("Enter a reorder level of zero or more.");
       }
+      const parsedFullLevel = fullLevel.trim() === "" ? null : Number(fullLevel);
+      if (parsedFullLevel !== null && (!Number.isFinite(parsedFullLevel) || parsedFullLevel <= 0)) {
+        throw new Error("Enter the level you want to keep, or leave it empty.");
+      }
+      const parsedPackSize = packSize.trim() === "" ? null : Number(packSize);
+      if (parsedPackSize !== null && (!Number.isFinite(parsedPackSize) || parsedPackSize <= 0)) {
+        throw new Error("Enter the pack size, or leave it empty for items bought loose.");
+      }
+
+      const common = {
+        name: name.trim(),
+        unit: unit.trim() || "piece",
+        low_stock_threshold: parsedThreshold,
+        cost_per_unit: cost.trim() === "" ? null : Number(cost),
+        pack_size: parsedPackSize,
+        pack_label: packLabel.trim() || null,
+        full_stock_level: parsedFullLevel,
+      };
 
       if (editing && item) {
-        await updateInventoryItem(item.id, {
-          name: name.trim(),
-          unit: unit.trim() || "piece",
-          low_stock_threshold: parsedThreshold,
-          cost_per_unit: cost.trim() === "" ? null : Number(cost),
-        });
+        await updateInventoryItem(item.id, common);
         return;
       }
 
@@ -68,13 +87,7 @@ export function ItemFormDialog({
         throw new Error("Enter an opening quantity of zero or more.");
       }
 
-      await createInventoryItem({
-        name: name.trim(),
-        unit: unit.trim() || "piece",
-        quantity: parsedQuantity,
-        low_stock_threshold: parsedThreshold,
-        cost_per_unit: cost.trim() === "" ? null : Number(cost),
-      });
+      await createInventoryItem({ ...common, quantity: parsedQuantity });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["inventory"] });
@@ -94,11 +107,11 @@ export function ItemFormDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display">{editing ? `Edit ${item?.name}` : "New supply item"}</DialogTitle>
           <DialogDescription>
-            Track what the shop consumes, and be warned when stock drops to the reorder level you set here.
+            Track what the shop consumes, and see at a glance how full each supply still is.
           </DialogDescription>
         </DialogHeader>
 
@@ -111,11 +124,16 @@ export function ItemFormDialog({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="item-name">Supply name</Label>
-            <Input id="item-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Detergent powder" />
+            <Input
+              id="item-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Surf Liquid Detergent"
+            />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="item-unit">Unit</Label>
-            <Input id="item-unit" value={unit} onChange={(event) => setUnit(event.target.value)} placeholder="kg" />
+            <Label htmlFor="item-unit">Consumed in</Label>
+            <Input id="item-unit" value={unit} onChange={(event) => setUnit(event.target.value)} placeholder="ml" />
           </div>
           {!editing ? (
             <div className="space-y-2">
@@ -131,6 +149,41 @@ export function ItemFormDialog({
               />
             </div>
           ) : null}
+          <div className="space-y-2">
+            <Label htmlFor="item-pack-size">Pack size (optional)</Label>
+            <Input
+              id="item-pack-size"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={packSize}
+              onChange={(event) => setPackSize(event.target.value)}
+              placeholder="2500"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="item-pack-label">Pack is called</Label>
+            <Input
+              id="item-pack-label"
+              value={packLabel}
+              onChange={(event) => setPackLabel(event.target.value)}
+              placeholder="pack or bottle"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="item-full-level">Full level (for the percentage)</Label>
+            <Input
+              id="item-full-level"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={fullLevel}
+              onChange={(event) => setFullLevel(event.target.value)}
+              placeholder="2500"
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="item-threshold">Reorder level</Label>
             <Input
@@ -159,7 +212,8 @@ export function ItemFormDialog({
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Once the shop edits a supply item, it stops being flagged as a placeholder.
+          The full level is what you treat as a complete stock of this supply — a fresh 2500 ml pack, for
+          example. The inventory page shows the current quantity as a percentage of it.
         </p>
 
         <DialogFooter>

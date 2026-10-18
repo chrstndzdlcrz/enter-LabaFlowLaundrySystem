@@ -49,6 +49,10 @@ class Service {
     required this.price,
     required this.estimatedHours,
     required this.isPlaceholder,
+    this.baseQuantity,
+    this.incrementQuantity,
+    this.incrementPrice,
+    this.maxQuantity,
   });
 
   final String id;
@@ -60,6 +64,16 @@ class Service {
   final int estimatedHours;
   final bool isPlaceholder;
 
+  /// Quantity the base price already covers (null for a flat price per unit).
+  final num? baseQuantity;
+
+  /// How much each extra charge covers, and what that charge is.
+  final num? incrementQuantity;
+  final num? incrementPrice;
+
+  /// Largest quantity accepted in one wash, when the shop caps it.
+  final num? maxQuantity;
+
   factory Service.fromJson(Map<String, dynamic> json) => Service(
         id: json['id'] as String,
         name: json['name'] as String,
@@ -69,6 +83,10 @@ class Service {
         price: (json['price'] as num?) ?? 0,
         estimatedHours: (json['estimated_hours'] as num?)?.toInt() ?? 24,
         isPlaceholder: (json['is_placeholder'] as bool?) ?? false,
+        baseQuantity: json['base_quantity'] as num?,
+        incrementQuantity: json['increment_quantity'] as num?,
+        incrementPrice: json['increment_price'] as num?,
+        maxQuantity: json['max_quantity'] as num?,
       );
 }
 

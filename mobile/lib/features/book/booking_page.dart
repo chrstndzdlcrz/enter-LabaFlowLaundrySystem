@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/formatters.dart';
+import '../../core/pricing.dart';
 import '../../data/laba_repository.dart';
 import '../../data/models.dart';
 import '../../widgets/status_badge.dart';
@@ -38,7 +39,7 @@ class _BookingPageState extends State<BookingPage> {
   num _totalFor(List<Service> services) {
     num total = 0;
     for (final service in services) {
-      total += service.price * (_quantities[service.id] ?? 0);
+      total += LabaPricing.lineTotal(service, _quantities[service.id] ?? 0);
     }
     return total;
   }
@@ -140,7 +141,8 @@ class _BookingPageState extends State<BookingPage> {
                               ),
                             ),
                             Text(
-                              '${formatMoney(service.price)} / ${service.unit}',
+                              LabaPricing.summary(service),
+                              textAlign: TextAlign.right,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: OceanColors.primary,
@@ -185,20 +187,37 @@ class _BookingPageState extends State<BookingPage> {
                               style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             IconButton(
-                              onPressed: () => setState(() {
-                                final step = service.unit == 'piece' ? 1 : 0.5;
-                                _quantities[service.id] = (_quantities[service.id] ?? 0) + step;
-                              }),
+                              onPressed: LabaPricing.maxQuantity(service) != null &&
+                                      (_quantities[service.id] ?? 0) >=
+                                          LabaPricing.maxQuantity(service)!
+                                  ? null
+                                  : () => setState(() {
+                                        final step = service.unit == 'piece' ? 1 : 0.5;
+                                        _quantities[service.id] = LabaPricing.clampQuantity(
+                                          service,
+                                          (_quantities[service.id] ?? 0) + step,
+                                        );
+                                      }),
                               icon: const Icon(Icons.add_circle_outline),
                               tooltip: 'Add one',
                             ),
                             const Spacer(),
                             Text(
-                              formatMoney(service.price * (_quantities[service.id] ?? 0)),
+                              LabaPricing.money(
+                                LabaPricing.lineTotal(service, _quantities[service.id] ?? 0),
+                              ),
                               style: const TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
+                        if (LabaPricing.quantityHint(service) != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              LabaPricing.quantityHint(service)!,
+                              style: const TextStyle(color: OceanColors.inkMuted, fontSize: 12),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -233,8 +252,7 @@ class _BookingPageState extends State<BookingPage> {
               ),
               const SizedBox(height: 12),
               const Text(
-                'The final amount is confirmed at the counter once your laundry is weighed. '
-                'Payment is collected there — cash or GCash.',
+                'The final amount is confirmed at the counter. Payment is collected there — cash or GCash.',
                 style: TextStyle(color: OceanColors.inkMuted, fontSize: 12),
               ),
               const SizedBox(height: 20),

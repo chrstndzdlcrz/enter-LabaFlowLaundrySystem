@@ -15,7 +15,10 @@ export function OrderItemsTable({
   paymentStatus,
   compact = false,
 }: {
-  items: Pick<OrderItem, "id" | "service_name" | "unit" | "quantity" | "unit_price" | "line_total">[];
+  items: Pick<
+    OrderItem,
+    "id" | "service_name" | "unit" | "quantity" | "unit_price" | "line_total" | "pricing_note"
+  >[];
   subtotal?: number;
   discount?: number;
   total?: number;
@@ -38,10 +41,24 @@ export function OrderItemsTable({
           <TableBody>
             {items.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium text-foreground">{item.service_name}</TableCell>
+                <TableCell className="font-medium text-foreground">
+                  {item.service_name}
+                  {/* Tiered lines explain themselves; a flat per-unit rate stays as the rate. */}
+                  {item.pricing_note ? (
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {item.pricing_note}
+                    </span>
+                  ) : null}
+                </TableCell>
                 <TableCell className="text-right text-muted-foreground">
-                  {formatCurrency(item.unit_price)}
-                  <span className="ml-1 text-xs">{UNIT_SUFFIX[item.unit] ?? ""}</span>
+                  {item.pricing_note ? (
+                    <span className="text-xs">Tiered</span>
+                  ) : (
+                    <>
+                      {formatCurrency(item.unit_price)}
+                      <span className="ml-1 text-xs">{UNIT_SUFFIX[item.unit] ?? ""}</span>
+                    </>
+                  )}
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground">
                   {formatQuantity(item.quantity, item.unit)}

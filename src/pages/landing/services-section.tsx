@@ -7,8 +7,8 @@ import { EmptyState } from "@/components/common/empty-state";
 import { LoadingState } from "@/components/common/loading-state";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import { listServices } from "@/lib/api/services";
-import { UNIT_SUFFIX } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";
+import { servicePricingSummary } from "@/lib/pricing";
 
 export function ServicesSection() {
   const { data: services, isLoading } = useQuery({
@@ -32,7 +32,8 @@ export function ServicesSection() {
             Services and prices
           </h2>
           <p className="text-muted-foreground">
-            Every price is per unit, so you always know what a load costs before you hand it over.
+            Each price covers a base weight, and anything above it is charged per extra kilo — so you
+            always know what a load costs before you hand it over.
           </p>
           {hasPlaceholder ? (
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -71,13 +72,8 @@ export function ServicesSection() {
                         <p className="text-sm text-muted-foreground">{service.description}</p>
                       </CardHeader>
                       <CardContent className="mt-auto space-y-3">
-                        <p className="flex items-baseline gap-2">
-                          <span className="font-display text-2xl font-bold text-primary">
-                            {formatCurrency(service.price)}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {UNIT_SUFFIX[service.unit] ?? `per ${service.unit}`}
-                          </span>
+                        <p className="font-display text-base font-bold text-primary">
+                          {servicePricingSummary(service)}
                         </p>
                         <p className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Timer className="h-3.5 w-3.5 text-primary" aria-hidden="true" />

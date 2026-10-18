@@ -9,6 +9,14 @@ export async function listServices(options?: { includeInactive?: boolean }): Pro
   return data ?? [];
 }
 
+export type ServicePricingInput = {
+  base_quantity: number | null;
+  increment_quantity: number | null;
+  increment_price: number | null;
+  max_quantity: number | null;
+};
+
+/** Flat price per unit, or a base quantity plus a charge per extra unit. */
 export async function createService(input: {
   name: string;
   description: string | null;
@@ -18,7 +26,7 @@ export async function createService(input: {
   estimated_hours: number;
   image_url: string | null;
   sort_order: number;
-}): Promise<Service> {
+} & ServicePricingInput): Promise<Service> {
   // Prices entered by the shop replace the placeholder marker.
   const { data, error } = await supabase
     .from("services")
@@ -32,7 +40,21 @@ export async function createService(input: {
 
 export async function updateService(
   id: string,
-  input: Partial<Pick<Service, "name" | "description" | "category" | "unit" | "price" | "estimated_hours" | "image_url" | "is_active" | "sort_order">>,
+  input: Partial<
+    Pick<
+      Service,
+      | "name"
+      | "description"
+      | "category"
+      | "unit"
+      | "price"
+      | "estimated_hours"
+      | "image_url"
+      | "is_active"
+      | "sort_order"
+    >
+  > &
+    Partial<ServicePricingInput>,
 ): Promise<Service> {
   const { data, error } = await supabase
     .from("services")
@@ -65,6 +87,7 @@ export async function saveConsumable(input: {
   inventory_item_id: string;
   qty_per_unit: number;
   unit: string | null;
+  basis: "unit" | "wash";
 }): Promise<void> {
   const payload = { ...input, is_placeholder: false };
   const { error } = input.id

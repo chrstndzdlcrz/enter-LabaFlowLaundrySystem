@@ -11,8 +11,8 @@ import { RecipeFormDialog } from "@/components/services/recipe-form-dialog";
 import { ServiceFormDialog } from "@/components/services/service-form-dialog";
 import { listInventory } from "@/lib/api/inventory";
 import { deleteConsumable, listConsumables, listServices, setServiceActive } from "@/lib/api/services";
-import { UNIT_SUFFIX } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";
+import { servicePricingSummary } from "@/lib/pricing";
 import { alertError, confirmAction, errorMessageFrom, flashSuccess } from "@/lib/alerts";
 
 export default function ManageServices() {
@@ -125,8 +125,8 @@ export default function ManageServices() {
                       <TableCell className="text-muted-foreground">{service.category ?? "—"}</TableCell>
                       <TableCell className="text-right font-semibold text-foreground">
                         {formatCurrency(service.price)}
-                        <span className="ml-1 text-xs font-normal text-muted-foreground">
-                          {UNIT_SUFFIX[service.unit] ?? ""}
+                        <span className="block text-xs font-normal text-muted-foreground">
+                          {servicePricingSummary(service)}
                         </span>
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
@@ -172,7 +172,8 @@ export default function ManageServices() {
           <div className="space-y-1">
             <CardTitle className="font-display text-lg">Consumption rules</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Applied automatically when an order reaches the consumption stage set in shop settings.
+              Applied automatically when an order reaches the consumption stage set in shop settings. “Per
+              wash” rules deduct a fixed amount for every load the service represents.
             </p>
           </div>
           <RecipeFormDialog services={services} items={items} />
@@ -192,7 +193,7 @@ export default function ManageServices() {
                   <TableRow className="bg-secondary/60">
                     <TableHead>Service</TableHead>
                     <TableHead>Supply</TableHead>
-                    <TableHead className="text-right">Per unit of service</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -212,6 +213,9 @@ export default function ManageServices() {
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground">
                           {Number(recipe.qty_per_unit)} {recipe.unit ?? item?.unit ?? ""}
+                          <span className="block text-xs">
+                            {recipe.basis === "wash" ? "per wash" : "per kg / piece"}
+                          </span>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -223,6 +227,7 @@ export default function ManageServices() {
                                 service_id: recipe.service_id,
                                 inventory_item_id: recipe.inventory_item_id,
                                 qty_per_unit: Number(recipe.qty_per_unit),
+                                basis: recipe.basis,
                               }}
                               trigger={
                                 <Button variant="ghost" size="sm">

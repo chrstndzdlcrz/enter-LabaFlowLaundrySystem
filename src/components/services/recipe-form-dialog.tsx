@@ -16,12 +16,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { saveConsumable } from "@/lib/api/services";
 import type { InventoryItem, Service } from "@/lib/api/types";
-import { alertError, errorMessageFrom, flashSuccess } from "@/lib/alerts";
+import { errorMessageFrom, flashSuccess } from "@/lib/alerts";
+
+type Basis = "wash" | "unit";
 
 /**
- * The consumption rule for one service: how much of a supply one unit of that
- * service uses. Only the shop knows these rates, so nothing is pre-filled unless
- * a placeholder rule already exists.
+ * The consumption rule for one service: how much of a supply it uses.
+ *
+ * Per wash is how the shop measures soap (100 ml detergent for every load);
+ * per unit is for rules measured against kilos or pieces.
  */
 export function RecipeFormDialog({
   services,
@@ -31,7 +34,13 @@ export function RecipeFormDialog({
 }: {
   services: Pick<Service, "id" | "name" | "unit">[];
   items: InventoryItem[];
-  existing?: { id: string; service_id: string; inventory_item_id: string; qty_per_unit: number };
+  existing?: {
+    id: string;
+    service_id: string;
+    inventory_item_id: string;
+    qty_per_unit: number;
+    basis: string;
+  };
   trigger?: React.ReactNode;
 }) {
   const editing = Boolean(existing);
@@ -39,6 +48,7 @@ export function RecipeFormDialog({
   const [serviceId, setServiceId] = useState("");
   const [itemId, setItemId] = useState("");
   const [qty, setQty] = useState("");
+  const [basis, setBasis] = useState<Basis>("wash");
   const [formError, setFormError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -47,6 +57,7 @@ export function RecipeFormDialog({
     setServiceId(existing?.service_id ?? services[0]?.id ?? "");
     setItemId(existing?.inventory_item_id ?? items[0]?.id ?? "");
     setQty(existing ? String(existing.qty_per_unit) : "");
+    setBasis(existing?.basis === "unit" ? "unit" : "wash");
     setFormError(null);
   }, [open, existing, services, items]);
 
@@ -58,7 +69,7 @@ export function RecipeFormDialog({
       if (!itemId) throw new Error("Choose the supply the service consumes.");
       const parsed = Number(qty);
       if (!Number.isFinite(parsed) || parsed <= 0) {
-        throw new Error("Enter how much of the supply one unit of the service uses.");
+        throw new Error("Enter how much of the supply is used.");
       }
 
       await saveConsumable({
@@ -67,6 +78,7 @@ export function RecipeFormDialog({
         inventory_item_id: itemId,
         qty_per_unit: parsed,
         unit: selectedItem?.unit ?? null,
+        basis,
       });
     },
     onSuccess: async () => {
@@ -93,8 +105,7 @@ export function RecipeFormDialog({
             {editing ? "Edit consumption rule" : "New consumption rule"}
           </DialogTitle>
           <DialogDescription>
-            Stock is deducted automatically when an order reaches the consumption stage. Use the shop's real
-            usage rate — for example 0.05 kg of detergent per kilogram of laundry.
+            Stock is deducted automatically when an order reaches the stage set in shop settings.
           </DialogDescription>
         </DialogHeader>
 
@@ -138,8 +149,27 @@ export function RecipeFormDialog({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="recipe-basis">Deduct</Label>
+            <Select value={basis} onValueChange={(value) => setBasis(value as Basis)}>
+              <SelectTrigger id="recipe-basis">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="wash">Once per wash / load</SelectItem>
+                <SelectItem value="unit">Per unit of the service (per kg or piece)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {basis === "wash"
+                ? "Use this for soap measured per load, for example 100 ml of detergent per wash."
+                : "Use this when usage grows with the weight or the number of pieces."}
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="recipe-qty">
-              Amount per unit of service {selectedItem ? `(${selectedItem.unit})` : ""}
+              Amount {basis === "wash" ? "per wash" : "per unit of service"}{" "}
+              {selectedItem ? `(${selectedItem.unit})` : ""}
             </Label>
             <Input
               id="recipe-qty"
@@ -149,7 +179,7 @@ export function RecipeFormDialog({
               step="0.001"
               value={qty}
               onChange={(event) => setQty(event.target.value)}
-              placeholder="0.05"
+              placeholder={basis === "wash" ? "100" : "0.05"}
             />
           </div>
         </div>

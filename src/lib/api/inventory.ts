@@ -37,6 +37,9 @@ export async function createInventoryItem(input: {
   quantity: number;
   low_stock_threshold: number;
   cost_per_unit: number | null;
+  pack_size: number | null;
+  pack_label: string | null;
+  full_stock_level: number | null;
 }): Promise<InventoryItem> {
   const { data, error } = await supabase
     .from("inventory_items")
@@ -51,7 +54,17 @@ export async function createInventoryItem(input: {
 export async function updateInventoryItem(
   id: string,
   input: Partial<
-    Pick<InventoryItem, "name" | "unit" | "low_stock_threshold" | "cost_per_unit" | "is_active">
+    Pick<
+      InventoryItem,
+      | "name"
+      | "unit"
+      | "low_stock_threshold"
+      | "cost_per_unit"
+      | "is_active"
+      | "pack_size"
+      | "pack_label"
+      | "full_stock_level"
+    >
   >,
 ): Promise<void> {
   const { error } = await supabase.from("inventory_items").update({ ...input, is_placeholder: false }).eq("id", id);

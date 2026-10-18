@@ -3496,11 +3496,14 @@ export type Database = {
         Row: {
           cost_per_unit: number | null
           created_at: string
+          full_stock_level: number | null
           id: string
           is_active: boolean
           is_placeholder: boolean
           low_stock_threshold: number
           name: string
+          pack_label: string | null
+          pack_size: number | null
           quantity: number
           unit: string
           updated_at: string
@@ -3508,11 +3511,14 @@ export type Database = {
         Insert: {
           cost_per_unit?: number | null
           created_at?: string
+          full_stock_level?: number | null
           id?: string
           is_active?: boolean
           is_placeholder?: boolean
           low_stock_threshold?: number
           name: string
+          pack_label?: string | null
+          pack_size?: number | null
           quantity?: number
           unit?: string
           updated_at?: string
@@ -3520,11 +3526,14 @@ export type Database = {
         Update: {
           cost_per_unit?: number | null
           created_at?: string
+          full_stock_level?: number | null
           id?: string
           is_active?: boolean
           is_placeholder?: boolean
           low_stock_threshold?: number
           name?: string
+          pack_label?: string | null
+          pack_size?: number | null
           quantity?: number
           unit?: string
           updated_at?: string
@@ -3684,6 +3693,7 @@ export type Database = {
           id: string
           line_total: number
           order_id: string
+          pricing_note: string | null
           quantity: number
           service_id: string | null
           service_name: string
@@ -3695,6 +3705,7 @@ export type Database = {
           id?: string
           line_total?: number
           order_id: string
+          pricing_note?: string | null
           quantity: number
           service_id?: string | null
           service_name: string
@@ -3706,6 +3717,7 @@ export type Database = {
           id?: string
           line_total?: number
           order_id?: string
+          pricing_note?: string | null
           quantity?: number
           service_id?: string | null
           service_name?: string
@@ -4144,6 +4156,7 @@ export type Database = {
       }
       service_consumables: {
         Row: {
+          basis: string
           created_at: string
           id: string
           inventory_item_id: string
@@ -4153,6 +4166,7 @@ export type Database = {
           unit: string | null
         }
         Insert: {
+          basis?: string
           created_at?: string
           id?: string
           inventory_item_id: string
@@ -4162,6 +4176,7 @@ export type Database = {
           unit?: string | null
         }
         Update: {
+          basis?: string
           created_at?: string
           id?: string
           inventory_item_id?: string
@@ -4187,14 +4202,18 @@ export type Database = {
       }
       services: {
         Row: {
+          base_quantity: number | null
           category: string | null
           created_at: string
           description: string | null
           estimated_hours: number
           id: string
           image_url: string | null
+          increment_price: number | null
+          increment_quantity: number | null
           is_active: boolean
           is_placeholder: boolean
+          max_quantity: number | null
           name: string
           price: number
           sort_order: number
@@ -4202,14 +4221,18 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          base_quantity?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
           estimated_hours?: number
           id?: string
           image_url?: string | null
+          increment_price?: number | null
+          increment_quantity?: number | null
           is_active?: boolean
           is_placeholder?: boolean
+          max_quantity?: number | null
           name: string
           price?: number
           sort_order?: number
@@ -4217,14 +4240,18 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          base_quantity?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
           estimated_hours?: number
           id?: string
           image_url?: string | null
+          increment_price?: number | null
+          increment_quantity?: number | null
           is_active?: boolean
           is_placeholder?: boolean
+          max_quantity?: number | null
           name?: string
           price?: number
           sort_order?: number
@@ -4447,6 +4474,10 @@ export type Database = {
         Args: { p_conversation_id: string }
         Returns: undefined
       }
+      quote_service: {
+        Args: { p_quantity: number; p_service_id: string }
+        Returns: number
+      }
       sales_summary: {
         Args: { p_from: string; p_granularity?: string; p_to: string }
         Returns: {
@@ -4455,6 +4486,13 @@ export type Database = {
           payment_count: number
           total: number
         }[]
+      }
+      service_line_total: {
+        Args: {
+          p_quantity: number
+          p_service: Database["public"]["Tables"]["services"]["Row"]
+        }
+        Returns: number
       }
       staff_open_conversation: {
         Args: { p_customer_id: string }

@@ -13,8 +13,8 @@ import { ServicePicker, type Quantities } from "@/components/orders/service-pick
 import { createBooking } from "@/lib/api/orders";
 import { listServices } from "@/lib/api/services";
 import { alertError, alertSuccess, errorMessageFrom } from "@/lib/alerts";
-import { UNIT_SUFFIX } from "@/lib/constants";
 import { formatCurrency, formatQuantity } from "@/lib/format";
+import { serviceLineTotal, servicePricingSummary } from "@/lib/pricing";
 
 export default function BookService() {
   const [quantities, setQuantities] = useState<Quantities>({});
@@ -37,7 +37,7 @@ export default function BookService() {
         .map((service) => ({
           service,
           quantity: quantities[service.id],
-          lineTotal: service.price * quantities[service.id],
+          lineTotal: serviceLineTotal(service, quantities[service.id]),
         })),
     [services, quantities],
   );
@@ -139,9 +139,8 @@ export default function BookService() {
                     <span className="space-y-0.5">
                       <span className="block font-medium text-foreground">{line.service.name}</span>
                       <span className="block text-xs text-muted-foreground">
-                        {formatQuantity(line.quantity, line.service.unit)} ×{" "}
-                        {formatCurrency(line.service.price)}{" "}
-                        {UNIT_SUFFIX[line.service.unit] ?? ""}
+                        {formatQuantity(line.quantity, line.service.unit)} ·{" "}
+                        {servicePricingSummary(line.service)}
                       </span>
                     </span>
                     <span className="font-semibold text-foreground">{formatCurrency(line.lineTotal)}</span>

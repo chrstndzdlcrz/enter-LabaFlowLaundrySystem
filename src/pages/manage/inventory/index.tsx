@@ -13,6 +13,14 @@ import { ItemFormDialog } from "@/components/inventory/item-form-dialog";
 import { listInventory, listMovements } from "@/lib/api/inventory";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDateTime, formatQuantity } from "@/lib/format";
+import { packSummary, stockPercent, stockTone, type StockTone } from "@/lib/pricing";
+
+const BAR_TONE: Record<StockTone, string> = {
+  success: "bg-success",
+  warning: "bg-warning",
+  danger: "bg-destructive",
+  neutral: "bg-muted-foreground",
+};
 
 const ALL_ITEMS = "all";
 
@@ -41,7 +49,7 @@ export default function ManageInventory() {
     <div className="space-y-6">
       <PageHeader
         title="Supplies & stock"
-        description="Detergent, softener and everything else the shop consumes, with the reorder levels the owner sets."
+        description="Soap and everything else the shop consumes, how full each supply is, and the reorder level the owner sets."
         actions={isAdmin ? <ItemFormDialog /> : null}
       />
 
@@ -80,7 +88,7 @@ export default function ManageInventory() {
                 <TableHead>Supply</TableHead>
                 <TableHead className="text-right">On hand</TableHead>
                 <TableHead className="text-right">Reorder at</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Stock status</TableHead>
                 <TableHead className="hidden sm:table-cell text-right">Cost / unit</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -88,6 +96,9 @@ export default function ManageInventory() {
             <TableBody>
               {items.map((item) => {
                 const low = Number(item.quantity) <= Number(item.low_stock_threshold);
+                const percent = stockPercent(item);
+                const tone = stockTone(percent, low);
+                const packs = packSummary(item);
                 return (
                   <TableRow key={item.id}>
                     <TableCell>
@@ -99,16 +110,43 @@ export default function ManageInventory() {
                     </TableCell>
                     <TableCell className="text-right font-semibold text-foreground">
                       {formatQuantity(item.quantity, item.unit)}
+                      {item.full_stock_level ? (
+                        <span className="block text-xs font-normal text-muted-foreground">
+                          of {formatQuantity(item.full_stock_level, item.unit)}
+                        </span>
+                      ) : null}
+                      {packs ? (
+                        <span className="block text-xs font-normal text-primary">≈ {packs}</span>
+                      ) : null}
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {formatQuantity(item.low_stock_threshold, item.unit)}
                     </TableCell>
                     <TableCell>
-                      {low ? (
-                        <ToneBadge tone="warning">Reorder</ToneBadge>
-                      ) : (
-                        <ToneBadge tone="success">In stock</ToneBadge>
-                      )}
+                      <div className="flex min-w-[9rem] flex-col gap-1.5">
+                        <span className="flex flex-wrap items-center gap-2">
+                          {percent !== null ? (
+                            <ToneBadge tone={tone}>{percent}% of full</ToneBadge>
+                          ) : low ? (
+                            <ToneBadge tone="warning">Reorder</ToneBadge>
+                          ) : (
+                            <ToneBadge tone="success">In stock</ToneBadge>
+                          )}
+                          {low && percent !== null ? <ToneBadge tone="danger">Reorder</ToneBadge> : null}
+                        </span>
+                        {percent !== null ? (
+                          <span
+                            className="h-1.5 w-full overflow-hidden rounded-full bg-secondary"
+                            role="img"
+                            aria-label={`${percent}% of the full level`}
+                          >
+                            <span
+                              className={`block h-full rounded-full ${BAR_TONE[tone]}`}
+                              style={{ width: `${Math.min(Math.max(percent, 0), 100)}%` }}
+                            />
+                          </span>
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell className="hidden text-right text-muted-foreground sm:table-cell">
                       {item.cost_per_unit ? `₱${Number(item.cost_per_unit).toFixed(2)}` : "—"}

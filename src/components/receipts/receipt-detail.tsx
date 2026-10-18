@@ -129,10 +129,23 @@ export function ReceiptDetail({ backTo = "/app/receipts" }: { backTo?: string })
                 <tbody>
                   {(order?.order_items ?? []).map((item) => (
                     <tr key={item.id} className="border-b border-border/60">
-                      <td className="py-2 font-medium text-foreground">{item.service_name}</td>
+                      <td className="py-2 font-medium text-foreground">
+                        {item.service_name}
+                        {item.pricing_note ? (
+                          <span className="block text-xs font-normal text-muted-foreground">
+                            {item.pricing_note}
+                          </span>
+                        ) : null}
+                      </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {formatCurrency(item.unit_price)}
-                        <span className="ml-1 text-xs">{UNIT_SUFFIX[item.unit] ?? ""}</span>
+                        {item.pricing_note ? (
+                          <span className="text-xs">Tiered</span>
+                        ) : (
+                          <>
+                            {formatCurrency(item.unit_price)}
+                            <span className="ml-1 text-xs">{UNIT_SUFFIX[item.unit] ?? ""}</span>
+                          </>
+                        )}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
                         {formatQuantity(item.quantity, item.unit)}

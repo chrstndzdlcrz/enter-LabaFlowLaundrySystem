@@ -1,0 +1,227 @@
+-- LabaFlow: shop-supplied pricing tiers and per-load soap consumption
+--
+-- Purely additive columns plus function replacements, so no existing row is lost.
+
+-- Tiered pricing: a base quantity covers the base price, then each additional
+-- increment is charged, with an optional hard cap per wash.
+alter table public.services
+  add column if not exists base_quantity numeric(10,3),
+  add column if not exists increment_quantity numeric(10,3) default 1,
+  add column if not exists increment_price numeric(10,2),
+  add column if not exists max_quantity numeric(10,3);
+
+-- Supplies bought by the pack or bottle but consumed by the millilitre.
+alter table public.inventory_items
+  add column if not exists pack_size numeric(12,3),
+  add column if not exists pack_label text,
+  add column if not exists full_stock_level numeric(12,3);
+
+-- How a consumption rule is applied: per unit of the service (per kg/piece) or
+-- per wash, which is how the shop measures soap.
+alter table public.service_consumables
+  add column if not exists basis text not null default 'unit';
+
+alter table public.service_consumables
+  add constraint service_consumables_basis_check check (basis in ('unit','wash'));
+
+-- Records how a tiered line was priced, so a receipt can explain itself.
+alter table public.order_items
+  add column if not exists pricing_note text;
+
+-- The single authority on what a service line costs.
+create or replace function public.service_line_total(p_service public.services, p_quantity numeric)
+returns numeric
+language plpgsql
+immutable
+as $$
+declare
+  v_extra numeric;
+  v_steps numeric;
+begin
+  if p_service.base_quantity is null or p_service.base_quantity <= 0 then
+    return round(p_service.price * p_quantity, 2);
+  end if;
+
+  v_extra := greatest(p_quantity - p_service.base_quantity, 0);
+  if v_extra = 0 then
+    return round(p_service.price, 2);
+  end if;
+
+  v_steps := ceil(v_extra / greatest(coalesce(p_service.increment_quantity, 1), 0.001));
+  return round(p_service.price + v_steps * coalesce(p_service.increment_price, 0), 2);
+end;
+$$;
+
+-- Quote helper so any client can confirm the server figure for a quantity.
+create or replace function public.quote_service(p_service_id uuid, p_quantity numeric)
+returns numeric
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_service public.services;
+begin
+  select * into v_service from public.services where id = p_service_id and is_active;
+  if v_service.id is null then
+    raise exception 'That service is not available anymore' using errcode = '22023';
+  end if;
+  if p_quantity is null or p_quantity <= 0 then
+    raise exception 'Quantity must be greater than zero' using errcode = '22023';
+  end if;
+  return public.service_line_total(v_service, p_quantity);
+end;
+$$;
+
+grant execute on function public.quote_service(uuid, numeric) to anon, authenticated;
+
+-- Order lines now use the tiered price and enforce the per-wash cap.
+create or replace function public.apply_order_items(p_order_id uuid, p_items jsonb)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_item jsonb;
+  v_service public.services;
+  v_qty numeric;
+  v_steps numeric;
+  v_line numeric;
+  v_note text;
+begin
+  if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
+    raise exception 'Add at least one service' using errcode = '22023';
+  end if;
+
+  for v_item in select * from jsonb_array_elements(p_items) loop
+    v_qty := coalesce((v_item ->> 'quantity')::numeric, 0);
+    if v_qty <= 0 then
+      raise exception 'Quantity must be greater than zero' using errcode = '22023';
+    end if;
+
+    select * into v_service from public.services
+     where id = (v_item ->> 'service_id')::uuid and is_active;
+    if v_service.id is null then
+      raise exception 'That service is not available anymore' using errcode = '22023';
+    end if;
+
+    if v_service.max_quantity is not null and v_qty > v_service.max_quantity then
+      raise exception '% covers at most % % per wash. Please split larger loads into separate bookings.',
+        v_service.name,
+        to_char(v_service.max_quantity, 'FM999990.###'), v_service.unit
+        using errcode = '22023';
+    end if;
+
+    v_line := public.service_line_total(v_service, v_qty);
+
+    if v_service.base_quantity is null then
+      v_note := null;
+    else
+      v_steps := ceil(
+        greatest(v_qty - v_service.base_quantity, 0)
+        / greatest(coalesce(v_service.increment_quantity, 1), 0.001)
+      );
+      v_note := 'First ' || to_char(v_service.base_quantity, 'FM999990.###') || ' ' || v_service.unit
+                || ' at ' || to_char(v_service.price, 'FM999990.00');
+      if v_steps > 0 then
+        v_note := v_note || ' + ' || to_char(v_steps, 'FM999990') || ' extra at '
+                   || to_char(coalesce(v_service.increment_price, 0), 'FM999990.00');
+      end if;
+    end if;
+
+    insert into public.order_items (
+      order_id, service_id, service_name, unit, quantity, unit_price, line_total, pricing_note
+    ) values (
+      p_order_id, v_service.id, v_service.name, v_service.unit, v_qty,
+      round(v_line / v_qty, 2), v_line, v_note
+    );
+  end loop;
+end;
+$$;
+
+-- Consumption: per wash, scaled by how many capacity-sized batches the quantity
+-- represents; or per unit for rules measured against kg/pieces.
+create or replace function public.handle_order_status_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_allowed text[];
+  v_name text;
+  v_stage text;
+begin
+  new.updated_at := now();
+
+  if new.status is distinct from old.status then
+    v_allowed := case old.status
+      when 'pending' then array['confirmed','cancelled']
+      when 'confirmed' then array['received','cancelled']
+      when 'received' then array['in_progress','cancelled']
+      when 'in_progress' then array['ready_for_pickup','cancelled']
+      when 'ready_for_pickup' then array['completed','in_progress']
+      else array[]::text[]
+    end;
+
+    if not (new.status = any (v_allowed)) then
+      raise exception 'Invalid status change: % -> %', old.status, new.status using errcode = '22023';
+    end if;
+
+    select full_name into v_name from public.profiles where id = auth.uid();
+
+    insert into public.order_status_history (order_id, from_status, to_status, changed_by, changed_by_name, note)
+    values (new.id, old.status, new.status, auth.uid(), coalesce(v_name, 'System'), new.notes);
+
+    if new.status = 'ready_for_pickup' and new.customer_id is not null then
+      insert into public.notifications (user_id, order_id, type, title, body)
+      values (
+        new.customer_id,
+        new.id,
+        'order_ready',
+        'Your laundry is ready for pick-up',
+        'Order ' || coalesce(new.order_code, '') || ' is ready for pick-up at Lab-a-Day Laundry Shop.'
+      )
+      on conflict (order_id) where type = 'order_ready'
+      do update set title = excluded.title,
+                    body = excluded.body,
+                    push_status = 'pending',
+                    push_error = null,
+                    push_attempts = 0,
+                    read_at = null,
+                    created_at = now();
+      new.ready_notified_at := now();
+    end if;
+
+    select consumption_stage into v_stage from public.shop_settings where id;
+    if new.status = coalesce(v_stage, 'in_progress') and new.consumption_applied_at is null then
+      insert into public.inventory_movements (item_id, delta, reason, order_id, note, created_by)
+      select sc.inventory_item_id,
+             -1 * (
+               sc.qty_per_unit *
+               case
+                 when sc.basis = 'wash' then greatest(
+                   1,
+                   ceil(oi.quantity / greatest(coalesce(s.max_quantity, s.base_quantity, 1), 0.001))
+                 )
+                 else oi.quantity
+               end
+             ),
+             'consumption',
+             new.id,
+             'Auto consumption for ' || coalesce(new.order_code, '') || ' (' || oi.service_name || ')',
+             auth.uid()
+      from public.order_items oi
+      join public.services s on s.id = oi.service_id
+      join public.service_consumables sc on sc.service_id = oi.service_id
+      where oi.order_id = new.id;
+
+      new.consumption_applied_at := now();
+    end if;
+  end if;
+
+  return new;
+end;
+$$;

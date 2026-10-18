@@ -35,6 +35,7 @@ project-root/
   │   │   ├── assets.ts       # Image URLs used by the public site
   │   │   ├── constants.ts    # Roles, order lifecycle, units, validation patterns
   │   │   ├── format.ts       # Currency, dates, relative time, initials
+  │   │   ├── pricing.ts      # Service price rules + stock level maths (mirrors SQL)
   │   │   └── utils.ts        # cn() and other primitives
   │   ├── pages/              # Route-level pages, each in its own subdirectory
   │   │   ├── landing/        # Public site sections
@@ -101,6 +102,7 @@ Whenever a new module (such as a component, hook, or utility) or a new page is a
 - **Add the call to the matching module in `src/lib/api/`**, not to a component.
 - **Reads/writes that change money, stock or status must go through a database function or a backend function**, never a bare client insert.
 - **Never trust the client for permissions.** Roles, ownership and totals are decided by row level security and backend functions.
+- **Never let a component compute a price.** Use `src/lib/pricing.ts`, which mirrors the database's `service_line_total`. If a price rule changes, change both and re-check that they agree.
 
 ### 5. Adding a Database Change
 

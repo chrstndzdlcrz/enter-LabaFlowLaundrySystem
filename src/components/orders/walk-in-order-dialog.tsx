@@ -21,6 +21,7 @@ import { listCustomers } from "@/lib/api/profiles";
 import { listServices } from "@/lib/api/services";
 import { alertError, alertSuccess, errorMessageFrom } from "@/lib/alerts";
 import { formatCurrency } from "@/lib/format";
+import { serviceLineTotal } from "@/lib/pricing";
 
 const UNLINKED = "none";
 
@@ -43,7 +44,7 @@ export function WalkInOrderDialog({ trigger }: { trigger?: React.ReactNode }) {
     [services, quantities],
   );
   const estimatedTotal = selected.reduce(
-    (sum, service) => sum + service.price * (quantities[service.id] ?? 0),
+    (sum, service) => sum + serviceLineTotal(service, quantities[service.id] ?? 0),
     0,
   );
 
