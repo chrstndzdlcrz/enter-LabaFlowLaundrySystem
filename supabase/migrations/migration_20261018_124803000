@@ -1,0 +1,32 @@
+-- Repair of the sample data written before the payment-total fix above:
+-- rebuild each order paid state from its recorded payments, then realign receipts.
+update public.orders o
+   set amount_paid = p.paid,
+       payment_status = case when p.paid >= o.total_amount then 'paid'
+                             when p.paid > 0 then 'partial'
+                             else 'unpaid' end,
+       status = case when o.status = 'ready_for_pickup' and p.paid >= o.total_amount
+                     then 'completed' else o.status end,
+       updated_at = now()
+  from (select order_id, sum(amount) as paid from public.payments group by order_id) as p
+ where p.order_id = o.id;
+
+update public.receipts r
+   set amount_paid = o.amount_paid,
+       is_final = (o.payment_status = 'paid'),
+       subtotal = o.subtotal,
+       total = o.total_amount,
+       issued_at = now()
+  from public.orders o
+ where o.id = r.order_id;
+
+-- Give every pre-existing order the opening history entry the new trigger adds.
+insert into public.order_status_history (order_id, from_status, to_status, changed_by, changed_by_name, note, created_at)
+select o.id, null, 'pending', o.created_by,
+       case when o.is_walk_in then 'Walk-in order created' else 'Booking created' end,
+       'Backfilled during setup', o.created_at
+  from public.orders o
+ where not exists (
+   select 1 from public.order_status_history h
+    where h.order_id = o.id and h.from_status is null
+ );

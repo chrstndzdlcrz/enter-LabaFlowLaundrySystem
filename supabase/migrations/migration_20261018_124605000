@@ -1,0 +1,54 @@
+-- LabaFlow starter catalog. Every price, stock level and usage rate is a
+-- clearly-marked placeholder the shop edits; no real business rate is assumed.
+
+insert into public.services (name, description, category, unit, price, estimated_hours, is_placeholder, sort_order)
+select v.name, v.description, v.category, v.unit, v.price::numeric(10,2), v.estimated_hours, v.is_placeholder, v.sort_order
+  from (values
+    ('Wash, Dry & Fold', 'Everyday laundry washed, dried and neatly folded. Priced per kilogram.', 'Everyday', 'kg', 45.00, 48, true, 10),
+    ('Wash Only', 'Washed and returned damp for you to dry at home. Priced per kilogram.', 'Everyday', 'kg', 35.00, 24, true, 20),
+    ('Dry Only', 'Commercial tumble drying only. Priced per kilogram.', 'Everyday', 'kg', 30.00, 12, true, 30),
+    ('Press / Steam Iron', 'Crisp steam pressing and folding, per piece.', 'Pressing', 'piece', 25.00, 24, true, 40),
+    ('Dry Cleaning', 'Solvent dry cleaning for suits, dresses and delicate fabrics.', 'Special', 'piece', 180.00, 72, true, 50),
+    ('Comforter & Beddings', 'Heavy bedding washed, dried and folded.', 'Special', 'piece', 250.00, 72, true, 60),
+    ('Express Rush', 'Priority processing for the whole load, charged on top of the service price.', 'Add-on', 'service', 100.00, 6, true, 70)
+  ) as v(name, description, category, unit, price, estimated_hours, is_placeholder, sort_order)
+ where not exists (select 1 from public.services);
+
+insert into public.inventory_items (name, unit, quantity, low_stock_threshold, cost_per_unit, is_placeholder)
+select v.name, v.unit, v.quantity::numeric(12,3), v.threshold::numeric(12,3), v.cost::numeric(10,2), true
+  from (values
+    ('Detergent Powder', 'kg', 25, 8, 180.00),
+    ('Fabric Softener', 'L', 15, 5, 220.00),
+    ('Bleach', 'L', 6, 3, 90.00),
+    ('Stain Remover', 'L', 4, 2, 260.00),
+    ('Plastic Bags', 'piece', 300, 100, 2.50),
+    ('Hangers', 'piece', 120, 40, 3.00)
+  ) as v(name, unit, quantity, threshold, cost)
+ where not exists (select 1 from public.inventory_items);
+
+-- Placeholder consumption rates so the auto-deduction path is demonstrable.
+-- Flagged in the admin UI for the shop to replace with its real usage rates.
+insert into public.service_consumables (service_id, inventory_item_id, qty_per_unit, unit, is_placeholder)
+select s.id, i.id, r.qty::numeric(12,4), i.unit, true
+  from (values
+    ('Wash, Dry & Fold', 'Detergent Powder', 0.050),
+    ('Wash, Dry & Fold', 'Fabric Softener', 0.020),
+    ('Wash Only', 'Detergent Powder', 0.030),
+    ('Dry Cleaning', 'Stain Remover', 0.050),
+    ('Press / Steam Iron', 'Hangers', 1.000)
+  ) as r(service_name, item_name, qty)
+  join public.services s on s.name = r.service_name
+  join public.inventory_items i on i.name = r.item_name
+ where not exists (select 1 from public.service_consumables);
+
+insert into public.faqs (question, answer, category, sort_order)
+select v.question, v.answer, v.category, v.sort_order
+  from (values
+    ('How long does a regular wash take?', 'Most everyday loads are ready within 24 to 48 hours. The estimated turnaround for each service is on the price list, and you can follow the exact status of your order in your account.', 'Turnaround', 10),
+    ('How is the price computed?', 'Every service shows its unit - per kilogram, per piece or per service. You enter the quantity when you book and LabaFlow shows the exact total before you submit, so there are no surprises at pick-up.', 'Pricing', 20),
+    ('Which payment methods do you accept?', 'Cash and GCash are accepted at the counter. Every payment is recorded against your order and a digital receipt is issued for each completed transaction.', 'Payment', 30),
+    ('How do I know when my laundry is ready?', 'LabaFlow notifies you the moment our staff mark your order as ready for pick-up. You can also follow the progress on your order page at any time.', 'Notifications', 40),
+    ('Do you offer pick-up and delivery?', 'Lab-a-Day Laundry Shop is a walk-in and drop-off counter service. LabaFlow tracks your booking and its progress, but it does not dispatch riders.', 'Service', 50),
+    ('What if I am not satisfied with my order?', 'Message the shop directly from your LabaFlow chat. Send your order code and what went wrong, and our staff will review the order record with you.', 'Support', 60)
+  ) as v(question, answer, category, sort_order)
+ where not exists (select 1 from public.faqs);

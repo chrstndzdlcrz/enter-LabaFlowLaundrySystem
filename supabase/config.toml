@@ -1,0 +1,7 @@
+# Backend function configuration.
+#
+# `rfid-scan` is called by the ESP32 reader, which cannot present a user session,
+# so it authenticates with the `x-device-key` header against the
+# RFID_DEVICE_API_KEY secret instead of a JWT.
+[functions.rfid-scan]
+verify_jwt = false
