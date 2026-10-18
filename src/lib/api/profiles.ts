@@ -42,6 +42,21 @@ export async function updateMyProfile(input: {
   return unwrap(data, error);
 }
 
+/**
+ * Switches the signed-in user's own account off. An administrator can switch it
+ * back on; the user cannot re-activate themselves.
+ */
+export async function deactivateMyAccount(): Promise<void> {
+  const { data: session } = await supabase.auth.getUser();
+  if (!session.user) throw new Error("You are not signed in.");
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ is_active: false })
+    .eq("id", session.user.id);
+  if (error) throw new Error(error.message);
+}
+
 export async function listProfiles(): Promise<Profile[]> {
   const { data, error } = await supabase
     .from("profiles")

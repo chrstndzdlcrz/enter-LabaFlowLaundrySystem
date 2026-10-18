@@ -1,0 +1,31 @@
+{
+  "name": "LabaFlow — Lab-a-Day Laundry Shop",
+  "short_name": "LabaFlow",
+  "description": "Book laundry services, follow order status from received to ready for pick-up, and keep digital receipts.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7fdfd",
+  "theme_color": "#0b8f92",
+  "categories": ["business", "productivity", "lifestyle"],
+  "shortcuts": [
+    { "name": "Book a service", "url": "/app/book" },
+    { "name": "My orders", "url": "/app/orders" },
+    { "name": "Counter queue", "url": "/manage/orders" }
+  ],
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

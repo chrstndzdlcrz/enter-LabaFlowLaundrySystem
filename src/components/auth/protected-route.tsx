@@ -35,3 +35,15 @@ export function ProtectedRoute({
 
   return <>{children}</>;
 }
+
+/**
+ * Restricts an admin-only page inside the staff area. Staff who open it are sent
+ * back to their dashboard; the backend refuses the privileged calls regardless.
+ */
+export function AdminOnly({ children }: { children: React.ReactNode }) {
+  const { isAdmin, loading } = useAuth();
+
+  if (loading) return <FullPageLoader />;
+  if (!isAdmin) return <Navigate to="/manage" replace />;
+  return <>{children}</>;
+}

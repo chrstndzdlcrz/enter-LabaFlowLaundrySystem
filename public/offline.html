@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b8f92" />
+  <title>LabaFlow — you are offline</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7fdfd;
+      --fg: #0d2430;
+      --muted: #4b6672;
+      --primary: #0b8f92;
+      --card: #ffffff;
+      --border: #d7e8ea;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a1418;
+        --fg: #e7f2f4;
+        --muted: #9db6bd;
+        --primary: #3fd0cd;
+        --card: #101f24;
+        --border: #22383f;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 18px 40px -24px rgba(11, 143, 146, 0.45);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>You are offline</h1>
+    <p>
+      LabaFlow needs a connection to load your laundry orders. Your saved orders and receipts are safe — reconnect
+      and try again.
+    </p>
+    <button type="button" onclick="window.location.reload()">Try again</button>
+  </div>
+</body>
+
+</html>

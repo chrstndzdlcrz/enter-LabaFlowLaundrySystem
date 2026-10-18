@@ -1,7 +1,7 @@
 {
-  "common.appName": "你的应用名称",
-  "home.hero.title": "欢迎来到你的空白应用",
-  "home.hero.subtitle": "轻松把任何 App 变成你的作品。",
-  "notFound.title": "哎呀，页面不存在",
+  "common.appName": "LabaFlow 洗衣系统",
+  "home.hero.title": "洗衣日，从容每一天。",
+  "home.hero.subtitle": "在线预约洗衣，先看价格，再跟踪每一步进度直至取件。",
+  "notFound.title": "找不到这个页面",
   "notFound.actions.backHome": "返回首页"
 }

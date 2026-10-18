@@ -20,7 +20,8 @@ export function CtaSection({ settings }: { settings: ShopSettings | undefined })
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="relative bg-gradient-glass px-6 py-12 backdrop-blur-sm sm:px-12 sm:py-16">
+          <div className="absolute inset-0 bg-background/80" aria-hidden="true" />
+          <div className="relative px-6 py-12 sm:px-12 sm:py-16">
             <div className="max-w-xl space-y-5">
               <h2 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                 Ready for laundry you can actually track?

@@ -1,0 +1,7 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    # The repository layer maps dynamic JSON into models; keep those casts explicit
+    # rather than letting the analyzer hide them.
+    avoid_dynamic_calls: ignore

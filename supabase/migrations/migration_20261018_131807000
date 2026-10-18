@@ -1,0 +1,4 @@
+-- Removes the one fake device token inserted a moment ago purely to exercise the
+-- dispatch-push "not configured" branch. It matches a single literal value that no
+-- real device uses, so no real data is affected.
+delete from public.device_tokens where token = 'VERIFICATION-ONLY-TOKEN-DO-NOT-SEND';
