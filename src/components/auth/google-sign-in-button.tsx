@@ -31,11 +31,12 @@ export function GoogleSignInButton({ label = "Continue with Google" }: { label?:
   const handleClick = async () => {
     setPending(true);
     try {
-      // Normal redirect flow: the trailing-slash origin is part of the exact
-      // redirect contract, and Preview should follow the same redirect.
+      // Normal redirect flow. The redirect target always keeps a trailing slash and
+      // follows the deployment base, so the OAuth round-trip returns to the app
+      // itself rather than to the site root on a project-site deployment.
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}/` },
+        options: { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` },
       });
       if (error) throw error;
     } catch (error) {

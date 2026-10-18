@@ -47,7 +47,8 @@ pnpm run build    # production build
 ```
 
 Publishing is done from Enter; `.github/workflows/web-deploy.yml` additionally
-builds and deploys to GitHub Pages once Pages is switched on for the repository.
+builds and deploys the same app to GitHub Pages once Pages is switched on for the
+repository (see *Deploying the web app to your own GitHub* below).
 
 ### Demo accounts (seeded once, deletable)
 
@@ -236,6 +237,41 @@ https://<your project ref>.supabase.opentrust.net/auth/v1/callback
 | `mobile-build.yml` | Repository variables `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`; optional secrets `GOOGLE_SERVICES_JSON_BASE64` (Firebase config) and `FCM_SERVICE_ACCOUNT_BASE64`. |
 
 Neither workflow has been executed from the development environment.
+
+#### Deploying the web app to your own GitHub
+
+1. **Put the code in your repository.** Either connect your own GitHub account in
+   Enter's GitHub integration so it syncs to your repo, or clone the repository and
+   push it to a new one of your own — `git remote set-url origin <your repo>` then
+   `git push -u origin main`.
+2. **Turn Pages on**: repository **Settings → Pages → Source: GitHub Actions**.
+   That is the only setting the workflow needs; it deliberately does not try to
+   change repository settings itself.
+3. **Let it run.** The first push to `main` builds and publishes the site. The job
+   prints the live URL; it is one of:
+   - `https://<user>.github.io/<repo>/` — a normal repository name
+   - `https://<user>.github.io/` — a repository named `<user>.github.io`, or a
+     custom domain
+   The workflow works out that base path by itself, and the app follows it: asset
+   URLs, the router, the service worker, the manifest and the sign-in redirects all
+   resolve relative to wherever it is deployed. A project path like `/repo/` needs
+   no edits and no rebuild.
+4. **Point Google and email confirmation at the new URL.** Sign-in round-trips only
+   return to the app if the deployed origin is allowed. Add the deployed URL to the
+   OAuth client's authorized JavaScript origins (and the managed backend's
+   `/auth/v1/callback` redirect URI), and add the deployed origin to the
+   authentication settings' redirect allow-list.
+
+**What the site needs from the backend.** Nothing changes when you deploy: the
+running app keeps using the same managed Supabase backend, with the publishable key
+that is already in the build. Data, logins, realtime chat and notifications keep
+working, and row level security applies to the public site exactly as it does in
+the preview.
+
+**If you ever want your own Supabase project instead**, tell me — the repository
+already holds the complete backend history in `supabase/migrations/` (schema, row
+level security, triggers, functions, seed data) plus the four deployable backend
+functions in `supabase/functions/`, so it can be recreated elsewhere in order.
 
 ---
 

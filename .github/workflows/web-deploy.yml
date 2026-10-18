@@ -1,16 +1,17 @@
 name: Web build and deploy
 
-# Builds the LabaFlow web app and deploys the static bundle to GitHub Pages.
+# Builds the LabaFlow web app and publishes it to GitHub Pages.
 #
-# OWNER SETUP (required, cannot be done by the agent):
-#   1. Repository settings -> Pages -> Source: "GitHub Actions".
-#   2. If the site will live at a custom domain, set it there too; the build uses
-#      the repository name as the base path otherwise.
-#   3. No secrets are needed for the build itself: the publishable key baked into
-#      src/integrations/supabase/client.ts is safe to ship, because every table is
-#      protected by row level security.
+# ONE-TIME OWNER STEP (cannot be done by the agent):
+#   Repository -> Settings -> Pages -> Source: "GitHub Actions".
+#   Nothing else is needed: the publishable client key that ships in the bundle is
+#   safe in public, because every table is protected by row level security.
 #
-# This workflow has NOT been executed or verified from the development sandbox.
+# The site URL will be either:
+#   https://<user>.github.io/<repo>/    (a normal repository)
+#   https://<user>.github.io/           (a repository named <user>.github.io,
+#                                        or any repository with a custom domain)
+# The base path is worked out automatically below, so both work without edits.
 
 on:
   push:
@@ -47,10 +48,22 @@ jobs:
       - name: Type check and lint
         run: pnpm check
 
-      - name: Build for the repository base path
-        run: pnpm exec vite build --base=/${{ github.event.repository.name }}/
+      - name: Work out the Pages base path
+        id: pages
+        run: |
+          REPO="${{ github.event.repository.name }}"
+          if [[ "$REPO" == *.github.io ]]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/$REPO/" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Add a single-page-app fallback
+      - uses: actions/configure-pages@v5
+
+      - name: Build for the Pages base path
+        run: pnpm exec vite build --base=${{ steps.pages.outputs.base }}
+
+      - name: Add the single-page-app fallback
         run: cp dist/index.html dist/404.html
 
       - uses: actions/upload-pages-artifact@v3

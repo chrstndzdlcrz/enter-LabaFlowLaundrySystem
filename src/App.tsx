@@ -19,22 +19,26 @@ const queryClient = new QueryClient({
 /**
  * Registers the offline app shell for the installable mobile experience. Only the
  * production build registers it, so development and preview never serve cached
- * assets.
+ * assets. The path follows the deployment base, so a project-site deployment
+ * (e.g. /repo/) finds its own service worker.
  */
 function useOfflineShell() {
   useEffect(() => {
     if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
     window.addEventListener("load", () => {
-      void navigator.serviceWorker.register("/sw.js").catch((error) => {
+      void navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch((error) => {
         console.error("Lab a Day: offline shell could not be registered", error);
       });
     });
   }, []);
 }
 
+/** "" for a root deployment, "/repo" for a GitHub project site. */
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 const App = () => {
   useOfflineShell();
-  const router = createBrowserRouter(routers);
+  const router = createBrowserRouter(routers, { basename: routerBasename || "/" });
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

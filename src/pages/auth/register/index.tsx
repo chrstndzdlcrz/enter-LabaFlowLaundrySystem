@@ -52,7 +52,9 @@ const Register = () => {
       email: values.email.trim(),
       password: values.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        // Keeps the trailing slash and follows the deployment base, so the
+        // confirmation link returns to the deployed app.
+        emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
         data: {
           full_name: values.full_name.trim(),
           phone: values.phone.trim() || null,
