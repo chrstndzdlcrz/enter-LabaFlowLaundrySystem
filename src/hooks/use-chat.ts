@@ -50,6 +50,9 @@ export function useChat(conversationId: string | null | undefined) {
     try {
       await markConversationRead(conversationId);
       void queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      // The unread badge in the staff inbox is a separate query; refresh it too so
+      // the count clears the moment the thread is opened.
+      void queryClient.invalidateQueries({ queryKey: ["conversation-activity"] });
     } catch (error) {
       console.error("Lab a Day: could not mark the conversation read", error);
     }

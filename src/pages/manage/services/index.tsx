@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Info, Package, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,11 @@ import { alertError, confirmAction, errorMessageFrom, flashSuccess } from "@/lib
 
 export default function ManageServices() {
   const queryClient = useQueryClient();
+  const [showHidden, setShowHidden] = useState(false);
 
   const servicesQuery = useQuery({
-    queryKey: ["services", "admin"],
-    queryFn: () => listServices({ includeInactive: true }),
+    queryKey: ["services", "admin", showHidden],
+    queryFn: () => listServices({ includeInactive: showHidden }),
   });
   const consumablesQuery = useQuery({ queryKey: ["consumables"], queryFn: listConsumables });
   const inventoryQuery = useQuery({ queryKey: ["inventory"], queryFn: listInventory });
@@ -83,8 +85,22 @@ export default function ManageServices() {
       ) : null}
 
       <Card>
-        <CardHeader>
-          <CardTitle className="font-display text-lg">Service catalogue</CardTitle>
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <CardTitle className="font-display text-lg">Service catalogue</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Only the services the shop offers are listed. A hidden service stays saved but never
+              appears to customers.
+            </p>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Switch
+              checked={showHidden}
+              onCheckedChange={setShowHidden}
+              aria-label="Show hidden services"
+            />
+            Show hidden
+          </label>
         </CardHeader>
         <CardContent>
           <QueryState
