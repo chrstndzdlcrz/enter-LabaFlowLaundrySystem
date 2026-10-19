@@ -5,21 +5,35 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, LogIn } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { supabase } from "@/integrations/supabase/client";
-import { EMAIL_PATTERN } from "@/lib/constants";
+import { signInWithPhone } from "@/lib/api/auth";
+import { EMAIL_PATTERN, PHONE_PATTERN } from "@/lib/constants";
 import { errorMessageFrom } from "@/lib/alerts";
 
+/** One field, so the customer can use whichever they remember. */
 const schema = z.object({
-  email: z
+  identifier: z
     .string()
     .trim()
-    .min(1, "Email is required")
-    .regex(EMAIL_PATTERN, "Enter a valid email address, like name@example.com"),
+    .min(1, "Enter your email address or your mobile number")
+    .refine(
+      (value) =>
+        value.includes("@") ? EMAIL_PATTERN.test(value) : PHONE_PATTERN.test(value),
+      "Enter a valid email address, or the mobile number on your account",
+    ),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -32,23 +46,32 @@ const Login = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { identifier: "", password: "" },
     mode: "onSubmit",
   });
 
   const onSubmit = async (values: FormValues) => {
     setFormError(null);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: values.email.trim(),
-      password: values.password,
-    });
+    const identifier = values.identifier.trim();
 
-    if (error) {
+    try {
+      if (identifier.includes("@")) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: identifier,
+          password: values.password,
+        });
+        if (error) throw error;
+      } else {
+        // A mobile number is resolved to its account on the backend.
+        await signInWithPhone(identifier, values.password);
+      }
+    } catch (error) {
       // Entered values stay in the form so nothing has to be retyped.
+      const message = errorMessageFrom(error);
       setFormError(
-        error.message.toLowerCase().includes("invalid")
-          ? "That email and password combination does not match an account."
-          : errorMessageFrom(error),
+        /invalid|credential|not correct/i.test(message)
+          ? "That email or mobile number, or the password, is not correct."
+          : message,
       );
       return;
     }
@@ -84,13 +107,21 @@ const Login = () => {
         <Form {...form}>
           <FormField
             control={form.control}
-            name="email"
+            name="identifier"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email address</FormLabel>
+                <FormLabel>Email or mobile number</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="name@example.com" {...field} />
+                  <Input
+                    autoComplete="username"
+                    inputMode="email"
+                    placeholder="name@example.com or 0917 123 4567"
+                    {...field}
+                  />
                 </FormControl>
+                <FormDescription>
+                  Use the same email address or mobile number you registered with.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

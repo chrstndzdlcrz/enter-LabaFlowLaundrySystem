@@ -5,3 +5,10 @@
 # RFID_DEVICE_API_KEY secret instead of a JWT.
 [functions.rfid-scan]
 verify_jwt = false
+
+# `sign-in-with-phone` is called before the customer has a session (that is the
+# whole point), so it cannot require a JWT. It authenticates the caller by
+# checking the password against the auth service, and never reveals whether a
+# mobile number has an account.
+[functions.sign-in-with-phone]
+verify_jwt = false
