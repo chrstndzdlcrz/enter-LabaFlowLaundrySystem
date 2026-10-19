@@ -1,0 +1,5 @@
+-- The shop's own payment-QR payload. The app sets the amount on it, so the shop
+-- never has to type an amount into GCash and the code always goes to the right
+-- account.
+alter table public.shop_settings
+  add column if not exists gcash_qr_payload text;

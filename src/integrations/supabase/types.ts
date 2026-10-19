@@ -4275,6 +4275,7 @@ export type Database = {
           email: string | null
           gcash_name: string | null
           gcash_number: string | null
+          gcash_qr_payload: string | null
           gcash_qr_url: string | null
           id: boolean
           payment_channels: Json
@@ -4293,6 +4294,7 @@ export type Database = {
           email?: string | null
           gcash_name?: string | null
           gcash_number?: string | null
+          gcash_qr_payload?: string | null
           gcash_qr_url?: string | null
           id?: boolean
           payment_channels?: Json
@@ -4311,6 +4313,7 @@ export type Database = {
           email?: string | null
           gcash_name?: string | null
           gcash_number?: string | null
+          gcash_qr_payload?: string | null
           gcash_qr_url?: string | null
           id?: boolean
           payment_channels?: Json

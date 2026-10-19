@@ -33,6 +33,7 @@ export default function ManageSettings() {
     gcash_qr_url: "",
     gcash_name: "",
     gcash_number: "",
+    gcash_qr_payload: "",
   });
   const [channels, setChannels] = useState<string[]>([]);
   const [newChannel, setNewChannel] = useState("");
@@ -54,6 +55,7 @@ export default function ManageSettings() {
       gcash_qr_url: settings.gcash_qr_url ?? "",
       gcash_name: settings.gcash_name ?? "",
       gcash_number: settings.gcash_number ?? settings.phone ?? "",
+      gcash_qr_payload: settings.gcash_qr_payload ?? "",
     });
     setChannels(paymentChannelsOf(settings));
   }, [settingsQuery.data]);
@@ -83,6 +85,7 @@ export default function ManageSettings() {
         gcash_qr_url: form.gcash_qr_url.trim() || null,
         gcash_name: form.gcash_name.trim() || null,
         gcash_number: form.gcash_number.trim() || null,
+        gcash_qr_payload: form.gcash_qr_payload.trim() || null,
       });
     },
     onSuccess: async () => {
@@ -271,7 +274,29 @@ export default function ManageSettings() {
                   GCash QR. Because it is your QR, the money goes straight to your account.
                 </p>
                 <div className="space-y-2">
-                  <Label htmlFor="settings-gcash-qr">Your GCash QR image link</Label>
+                  <Label htmlFor="settings-gcash-payload">GCash QR code content</Label>
+                  <Textarea
+                    id="settings-gcash-payload"
+                    value={form.gcash_qr_payload}
+                    onChange={(event) => setForm({ ...form, gcash_qr_payload: event.target.value })}
+                    rows={3}
+                    placeholder="00020101021126…6304ABCD"
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paste the text inside your own GCash QR: open your GCash QR, scan it with any QR
+                    reader app, copy the text, and paste it here. LabaFlow then puts the amount in for
+                    each order, so the customer only scans and confirms — the money still goes to your
+                    own account, because it is your code.
+                  </p>
+                  <p className="text-xs font-medium text-warning">
+                    Test it once: open an order, scan the QR LabaFlow shows with GCash, and check that
+                    your name and the amount appear before relying on it.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="settings-gcash-qr">Or a plain QR image link</Label>
                   <Input
                     id="settings-gcash-qr"
                     value={form.gcash_qr_url}

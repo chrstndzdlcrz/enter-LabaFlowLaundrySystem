@@ -25,6 +25,7 @@ export async function updateShopSettings(
       | "gcash_qr_url"
       | "gcash_name"
       | "gcash_number"
+      | "gcash_qr_payload"
     >
   >,
 ): Promise<ShopSettings> {
