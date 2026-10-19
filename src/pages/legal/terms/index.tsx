@@ -55,6 +55,14 @@ const SECTIONS = [
     ],
   },
   {
+    title: "Sorting and colours",
+    body: [
+      "When you book, you choose how the load is sorted: whites only, coloured, or mixed.",
+      "If you choose mixed, everything is washed in one load. Colours may run onto lighter items, and that risk belongs to the load you chose — the shop is not responsible for it.",
+      "If you want your whites kept white, choose “Whites only” and we will wash them separately.",
+    ],
+  },
+  {
     title: "Your items",
     body: [
       "Please point out anything fragile, stained, or requiring special care when you drop it off, and we will follow those instructions.",

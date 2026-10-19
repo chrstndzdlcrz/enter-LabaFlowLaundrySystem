@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/common/page-header";
 import { QueryState } from "@/components/common/query-state";
 import { ServicePicker, type Quantities } from "@/components/orders/service-picker";
+import { LoadTypePicker } from "@/components/orders/load-type-picker";
 import { createBooking } from "@/lib/api/orders";
 import { listServices } from "@/lib/api/services";
 import { alertError, alertSuccess, errorMessageFrom } from "@/lib/alerts";
@@ -20,6 +21,7 @@ export default function BookService() {
   const [quantities, setQuantities] = useState<Quantities>({});
   const [notes, setNotes] = useState("");
   const [pickupAt, setPickupAt] = useState("");
+  const [loadType, setLoadType] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -49,10 +51,14 @@ export default function BookService() {
       if (lines.length === 0) {
         throw new Error("Add at least one service before submitting your booking.");
       }
+      if (loadType === "") {
+        throw new Error("Choose how the load should be sorted: whites only, coloured, or mixed.");
+      }
       return createBooking({
         items: lines.map((line) => ({ service_id: line.service.id, quantity: line.quantity })),
         notes: notes.trim() || null,
         pickupAt: pickupAt ? new Date(pickupAt).toISOString() : null,
+        loadType,
       });
     },
     onSuccess: async (order) => {
@@ -60,6 +66,7 @@ export default function BookService() {
       setQuantities({});
       setNotes("");
       setPickupAt("");
+      setLoadType("");
       await alertSuccess(
         `Booking ${order.order_code} submitted`,
         "The shop will confirm your booking. Bring your laundry to the counter and quote this order code — you can follow every status change from your orders page.",
@@ -94,6 +101,8 @@ export default function BookService() {
               <CardTitle className="font-display text-base">Booking details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <LoadTypePicker value={loadType} onChange={setLoadType} />
+
               <div className="space-y-2">
                 <Label htmlFor="pickup-at">Preferred drop-off / pick-up date (optional)</Label>
                 <Input

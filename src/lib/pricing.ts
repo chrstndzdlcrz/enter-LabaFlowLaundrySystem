@@ -100,6 +100,21 @@ export function serviceQuantityHint(service: PricedService): string | null {
     : `Minimum charge covers up to ${base} ${unit}.`;
 }
 
+/**
+ * Turnaround as the shop quotes it. Wash time depends on how many loads are
+ * already queued, so a range is shown when the shop sets a fastest time.
+ */
+export function serviceTurnaround(service: {
+  estimated_hours: number | string;
+  estimated_hours_min?: number | string | null;
+}): string {
+  const max = Number(service.estimated_hours) || 0;
+  const min = num(service.estimated_hours_min ?? null);
+
+  if (min !== null && min > 0 && min < max) return `${min}–${max} hours`;
+  return `${max} hour${max === 1 ? "" : "s"}`;
+}
+
 /** How full a supply is, against the level the shop wants to keep. */
 export function stockPercent(item: {
   quantity: number | string | null;

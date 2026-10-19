@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cancelMyOrder, getOrder, getOrderHistory, getReceiptForOrder } from "@/lib/api/orders";
 import { realtimeTopic } from "@/lib/realtime";
 import { confirmAction, alertError, alertSuccess, errorMessageFrom } from "@/lib/alerts";
+import { LOAD_TYPE_LABELS } from "@/lib/constants";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 
 export default function CustomerOrderDetail() {
@@ -141,6 +142,11 @@ export default function CustomerOrderDetail() {
               <Badge variant="outline" className="rounded-full">
                 Payment: {order.payment_status}
               </Badge>
+              {order.load_type ? (
+                <Badge variant="outline" className="rounded-full">
+                  Load: {LOAD_TYPE_LABELS[order.load_type] ?? order.load_type}
+                </Badge>
+              ) : null}
               <Badge variant="outline" className="rounded-full">
                 Paid {formatCurrency(order.amount_paid)} of {formatCurrency(order.total_amount)}
               </Badge>

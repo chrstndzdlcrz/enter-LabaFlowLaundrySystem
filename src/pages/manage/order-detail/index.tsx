@@ -15,7 +15,7 @@ import { getOrder, getOrderHistory, getReceiptForOrder } from "@/lib/api/orders"
 import { listProfiles } from "@/lib/api/profiles";
 import { openConversationForCustomer } from "@/lib/api/chat";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import type { OrderStatus } from "@/lib/constants";
+import { LOAD_TYPE_LABELS, type OrderStatus } from "@/lib/constants";
 import { useMutation } from "@tanstack/react-query";
 import { alertError, errorMessageFrom } from "@/lib/alerts";
 
@@ -108,6 +108,11 @@ export default function ManageOrderDetail() {
               {order.is_walk_in ? (
                 <Badge variant="outline" className="rounded-full">
                   Walk-in drop-off
+                </Badge>
+              ) : null}
+              {order.load_type ? (
+                <Badge variant="outline" className="rounded-full">
+                  Load: {LOAD_TYPE_LABELS[order.load_type] ?? order.load_type}
                 </Badge>
               ) : null}
               <Badge variant="outline" className="rounded-full">

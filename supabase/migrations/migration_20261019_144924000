@@ -1,0 +1,113 @@
+-- Wash time is a range that depends on the queue, and every order records how the
+-- load was sorted (whites / coloured / mixed).
+alter table public.services
+  add column if not exists estimated_hours_min integer;
+
+alter table public.orders
+  add column if not exists load_type text;
+
+alter table public.orders
+  add constraint orders_load_type_check
+  check (load_type is null or load_type in ('whites','colored','mixed'));
+
+update public.services
+   set estimated_hours_min = 2,
+       estimated_hours = 3,
+       description = 'Wash, dry and fold. First 7 kg for 180.00, then 25.00 per extra kilo. Maximum 10 kg per wash. Wash time is 2 to 3 hours, depending on how many loads are already queued.',
+       updated_at = now()
+ where name = 'Wash, Dry & Fold';
+
+-- Shop address and the number customers should call.
+update public.shop_settings
+   set address = 'B Cosme Street, Poblacion 2, Pagsanjan, Laguna',
+       phone = '09611308218',
+       updated_at = now()
+ where id;
+
+-- Bookings now carry the chosen load type.
+create or replace function public.create_booking(
+  p_items jsonb,
+  p_notes text default null,
+  p_pickup_at timestamptz default null,
+  p_load_type text default null
+)
+returns public.orders
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_profile public.profiles;
+  v_order public.orders;
+begin
+  if v_uid is null then
+    raise exception 'Not authenticated' using errcode = '42501';
+  end if;
+
+  if p_load_type is not null and p_load_type not in ('whites','colored','mixed') then
+    raise exception 'Choose how the load is sorted: whites only, coloured, or mixed.' using errcode = '22023';
+  end if;
+
+  select * into v_profile from public.profiles where id = v_uid;
+  if v_profile.id is null then
+    raise exception 'Profile not found' using errcode = 'P0002';
+  end if;
+
+  insert into public.orders (
+    customer_id, is_walk_in, customer_name, customer_phone, status, notes, pickup_at, created_by, load_type
+  ) values (
+    v_uid, false, coalesce(nullif(v_profile.full_name, ''), v_profile.email, 'Customer'),
+    v_profile.phone, 'pending', nullif(trim(coalesce(p_notes, '')), ''), p_pickup_at, v_uid, p_load_type
+  ) returning * into v_order;
+
+  perform public.apply_order_items(v_order.id, p_items);
+
+  select * into v_order from public.orders where id = v_order.id;
+  return v_order;
+end;
+$$;
+
+grant execute on function public.create_booking(jsonb, text, timestamptz, text) to authenticated;
+
+create or replace function public.create_walk_in_order(
+  p_customer_name text,
+  p_customer_phone text,
+  p_items jsonb,
+  p_notes text default null,
+  p_link_customer_id uuid default null,
+  p_load_type text default null
+)
+returns public.orders
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_order public.orders;
+begin
+  if not public.is_staff() then
+    raise exception 'Only shop staff can create walk-in orders' using errcode = '42501';
+  end if;
+  if coalesce(trim(p_customer_name), '') = '' then
+    raise exception 'Customer name is required' using errcode = '22023';
+  end if;
+  if p_load_type is not null and p_load_type not in ('whites','colored','mixed') then
+    raise exception 'Choose how the load is sorted: whites only, coloured, or mixed.' using errcode = '22023';
+  end if;
+
+  insert into public.orders (
+    customer_id, is_walk_in, customer_name, customer_phone, status, notes, created_by, assigned_to, load_type
+  ) values (
+    p_link_customer_id, true, trim(p_customer_name), nullif(trim(coalesce(p_customer_phone, '')), ''),
+    'received', nullif(trim(coalesce(p_notes, '')), ''), auth.uid(), auth.uid(), p_load_type
+  ) returning * into v_order;
+
+  perform public.apply_order_items(v_order.id, p_items);
+
+  select * into v_order from public.orders where id = v_order.id;
+  return v_order;
+end;
+$$;
+
+grant execute on function public.create_walk_in_order(text, text, jsonb, text, uuid, text) to authenticated;

@@ -3798,6 +3798,7 @@ export type Database = {
           discount: number
           id: string
           is_walk_in: boolean
+          load_type: string | null
           notes: string | null
           order_code: string | null
           payment_status: string
@@ -3820,6 +3821,7 @@ export type Database = {
           discount?: number
           id?: string
           is_walk_in?: boolean
+          load_type?: string | null
           notes?: string | null
           order_code?: string | null
           payment_status?: string
@@ -3842,6 +3844,7 @@ export type Database = {
           discount?: number
           id?: string
           is_walk_in?: boolean
+          load_type?: string | null
           notes?: string | null
           order_code?: string | null
           payment_status?: string
@@ -4207,6 +4210,7 @@ export type Database = {
           created_at: string
           description: string | null
           estimated_hours: number
+          estimated_hours_min: number | null
           id: string
           image_url: string | null
           increment_price: number | null
@@ -4226,6 +4230,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           estimated_hours?: number
+          estimated_hours_min?: number | null
           id?: string
           image_url?: string | null
           increment_price?: number | null
@@ -4245,6 +4250,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           estimated_hours?: number
+          estimated_hours_min?: number | null
           id?: string
           image_url?: string | null
           increment_price?: number | null
@@ -4370,6 +4376,7 @@ export type Database = {
           discount: number
           id: string
           is_walk_in: boolean
+          load_type: string | null
           notes: string | null
           order_code: string | null
           payment_status: string
@@ -4382,7 +4389,14 @@ export type Database = {
         }
       }
       create_booking: {
-        Args: { p_items: Json; p_notes?: string; p_pickup_at?: string }
+        Args:
+          | {
+              p_items: Json
+              p_load_type?: string
+              p_notes?: string
+              p_pickup_at?: string
+            }
+          | { p_items: Json; p_notes?: string; p_pickup_at?: string }
         Returns: {
           amount_paid: number
           assigned_to: string | null
@@ -4395,6 +4409,7 @@ export type Database = {
           discount: number
           id: string
           is_walk_in: boolean
+          load_type: string | null
           notes: string | null
           order_code: string | null
           payment_status: string
@@ -4407,13 +4422,22 @@ export type Database = {
         }
       }
       create_walk_in_order: {
-        Args: {
-          p_customer_name: string
-          p_customer_phone: string
-          p_items: Json
-          p_link_customer_id?: string
-          p_notes?: string
-        }
+        Args:
+          | {
+              p_customer_name: string
+              p_customer_phone: string
+              p_items: Json
+              p_link_customer_id?: string
+              p_load_type?: string
+              p_notes?: string
+            }
+          | {
+              p_customer_name: string
+              p_customer_phone: string
+              p_items: Json
+              p_link_customer_id?: string
+              p_notes?: string
+            }
         Returns: {
           amount_paid: number
           assigned_to: string | null
@@ -4426,6 +4450,7 @@ export type Database = {
           discount: number
           id: string
           is_walk_in: boolean
+          load_type: string | null
           notes: string | null
           order_code: string | null
           payment_status: string
@@ -4679,6 +4704,39 @@ export type Database = {
         Relationships: []
       }
       messages_2026_10_21: {
+        Row: {
+          event: string | null
+          extension: string
+          id: string
+          inserted_at: string
+          payload: Json | null
+          private: boolean | null
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          event?: string | null
+          extension: string
+          id?: string
+          inserted_at?: string
+          payload?: Json | null
+          private?: boolean | null
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          event?: string | null
+          extension?: string
+          id?: string
+          inserted_at?: string
+          payload?: Json | null
+          private?: boolean | null
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages_2026_10_22: {
         Row: {
           event: string | null
           extension: string

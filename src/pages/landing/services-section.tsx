@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/common/empty-state";
 import { LoadingState } from "@/components/common/loading-state";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import { listServices } from "@/lib/api/services";
-import { servicePricingSummary } from "@/lib/pricing";
+import { servicePricingSummary, serviceTurnaround } from "@/lib/pricing";
 
 /**
  * The shop's services, shown as one list with a photo per service. Categories are
@@ -97,8 +97,7 @@ export function ServicesSection() {
 
                   <p className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-                    Ready in about {service.estimated_hours} hour
-                    {service.estimated_hours === 1 ? "" : "s"}
+                    Ready in about {serviceTurnaround(service)}
                   </p>
                 </CardContent>
               </Card>

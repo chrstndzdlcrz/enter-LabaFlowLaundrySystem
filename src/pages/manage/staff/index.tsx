@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -121,7 +122,7 @@ function CreateStaffDialog() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="staff-password">Password (optional)</Label>
-            <Input
+            <PasswordInput
               id="staff-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}

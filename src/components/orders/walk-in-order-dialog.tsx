@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ServicePicker, type Quantities } from "./service-picker";
+import { LoadTypePicker } from "./load-type-picker";
 import { createWalkInOrder } from "@/lib/api/orders";
 import { listCustomers } from "@/lib/api/profiles";
 import { listServices } from "@/lib/api/services";
@@ -32,6 +33,7 @@ export function WalkInOrderDialog({ trigger }: { trigger?: React.ReactNode }) {
   const [customerPhone, setCustomerPhone] = useState("");
   const [linkedCustomer, setLinkedCustomer] = useState<string>(UNLINKED);
   const [notes, setNotes] = useState("");
+  const [loadType, setLoadType] = useState("");
   const [quantities, setQuantities] = useState<Quantities>({});
   const [formError, setFormError] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -53,6 +55,7 @@ export function WalkInOrderDialog({ trigger }: { trigger?: React.ReactNode }) {
     setCustomerPhone("");
     setLinkedCustomer(UNLINKED);
     setNotes("");
+    setLoadType("");
     setQuantities({});
     setFormError(null);
   };
@@ -69,12 +72,16 @@ export function WalkInOrderDialog({ trigger }: { trigger?: React.ReactNode }) {
       if (items.length === 0) {
         throw new Error("Pick at least one service and quantity for this drop-off.");
       }
+      if (loadType === "") {
+        throw new Error("Choose how the load should be sorted: whites only, coloured, or mixed.");
+      }
       return createWalkInOrder({
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim() || null,
         items,
         notes: notes.trim() || null,
         linkCustomerId: linkedCustomer === UNLINKED ? null : linkedCustomer,
+        loadType,
       });
     },
     onSuccess: async (order) => {
@@ -162,6 +169,8 @@ export function WalkInOrderDialog({ trigger }: { trigger?: React.ReactNode }) {
             </p>
           </div>
         </div>
+
+        <LoadTypePicker value={loadType} onChange={setLoadType} idPrefix="walkin-load" />
 
         <div className="space-y-3">
           <Label>Services</Label>

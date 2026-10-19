@@ -160,11 +160,14 @@ export async function createBooking(input: {
   items: { service_id: string; quantity: number }[];
   notes?: string | null;
   pickupAt?: string | null;
+  /** How the customer wants the load sorted: whites, colored or mixed. */
+  loadType?: string | null;
 }): Promise<Order> {
   const { data, error } = await supabase.rpc("create_booking", {
     p_items: input.items as never,
     p_notes: input.notes ?? undefined,
     p_pickup_at: input.pickupAt ?? undefined,
+    p_load_type: input.loadType ?? undefined,
   });
   if (error) throw new Error(error.message);
   return data as unknown as Order;
@@ -176,6 +179,7 @@ export async function createWalkInOrder(input: {
   items: { service_id: string; quantity: number }[];
   notes?: string | null;
   linkCustomerId?: string | null;
+  loadType?: string | null;
 }): Promise<Order> {
   const { data, error } = await supabase.rpc("create_walk_in_order", {
     p_customer_name: input.customerName,
@@ -183,6 +187,7 @@ export async function createWalkInOrder(input: {
     p_items: input.items as never,
     p_notes: input.notes ?? undefined,
     p_link_customer_id: input.linkCustomerId ?? undefined,
+    p_load_type: input.loadType ?? undefined,
   });
   if (error) throw new Error(error.message);
   return data as unknown as Order;

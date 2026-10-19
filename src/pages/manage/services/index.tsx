@@ -12,7 +12,7 @@ import { ServiceFormDialog } from "@/components/services/service-form-dialog";
 import { listInventory } from "@/lib/api/inventory";
 import { deleteConsumable, listConsumables, listServices, setServiceActive } from "@/lib/api/services";
 import { formatCurrency } from "@/lib/format";
-import { servicePricingSummary } from "@/lib/pricing";
+import { servicePricingSummary, serviceTurnaround } from "@/lib/pricing";
 import { alertError, confirmAction, errorMessageFrom, flashSuccess } from "@/lib/alerts";
 
 export default function ManageServices() {
@@ -130,7 +130,7 @@ export default function ManageServices() {
                         </span>
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {service.estimated_hours} h
+                        {serviceTurnaround(service)}
                       </TableCell>
                       <TableCell>
                         <span className="flex items-center gap-2">

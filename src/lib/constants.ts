@@ -131,4 +131,32 @@ export const DEFAULT_PAYMENT_CHANNELS = ["Cash", "GCash"];
 export const PHONE_PATTERN = /^[+()\d][\d\s()+-]{6,19}$/;
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * How the customer asks for the load to be sorted. The shop does not take
+ * responsibility for colours that run when the customer chooses "mixed".
+ */
+export const LOAD_TYPES = [
+  {
+    value: "whites",
+    label: "Whites only",
+    hint: "White and light items washed on their own.",
+  },
+  {
+    value: "colored",
+    label: "Coloured",
+    hint: "Coloured items washed together, separate from the whites.",
+  },
+  {
+    value: "mixed",
+    label: "Mixed",
+    hint: "Everything in one load. If colours run, that is on the load, not the shop.",
+  },
+] as const;
+
+export const LOAD_TYPE_LABELS: Record<string, string> = {
+  whites: "Whites only",
+  colored: "Coloured",
+  mixed: "Mixed",
+};
+
 export const DEMO_PASSWORD = "LabaFlow123!";

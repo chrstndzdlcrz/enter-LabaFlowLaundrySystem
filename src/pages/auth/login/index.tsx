@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { supabase } from "@/integrations/supabase/client";
@@ -102,7 +103,7 @@ const Login = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" autoComplete="current-password" placeholder="Your password" {...field} />
+                  <PasswordInput autoComplete="current-password" placeholder="Your password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

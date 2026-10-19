@@ -5,8 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, UserPlus } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,7 +25,8 @@ const schema = z
     phone: z
       .string()
       .trim()
-      .refine((value) => value === "" || PHONE_PATTERN.test(value), "Enter a valid mobile number"),
+      .min(1, "Mobile number is required")
+      .refine((value) => PHONE_PATTERN.test(value), "Enter a valid mobile number, like 0917 123 4567"),
     password: z.string().min(8, "Use at least 8 characters"),
     confirm_password: z.string(),
   })
@@ -139,11 +141,10 @@ const Register = () => {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mobile number (optional)</FormLabel>
+                <FormLabel>Mobile number</FormLabel>
                 <FormControl>
-                  <Input inputMode="tel" autoComplete="tel" placeholder="+63 917 000 0000" {...field} />
+                  <Input inputMode="tel" autoComplete="tel" placeholder="0917 123 4567" {...field} />
                 </FormControl>
-                <FormDescription>Used by staff when they need to reach you about an order.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -156,7 +157,7 @@ const Register = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" autoComplete="new-password" placeholder="At least 8 characters" {...field} />
+                  <PasswordInput autoComplete="new-password" placeholder="At least 8 characters" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -170,7 +171,7 @@ const Register = () => {
               <FormItem>
                 <FormLabel>Confirm password</FormLabel>
                 <FormControl>
-                  <Input type="password" autoComplete="new-password" placeholder="Type it again" {...field} />
+                  <PasswordInput autoComplete="new-password" placeholder="Type it again" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

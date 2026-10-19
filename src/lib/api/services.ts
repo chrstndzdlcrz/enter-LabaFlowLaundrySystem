@@ -24,6 +24,7 @@ export async function createService(input: {
   unit: Service["unit"];
   price: number;
   estimated_hours: number;
+  estimated_hours_min: number | null;
   image_url: string | null;
   sort_order: number;
 } & ServicePricingInput): Promise<Service> {
@@ -49,6 +50,7 @@ export async function updateService(
       | "unit"
       | "price"
       | "estimated_hours"
+      | "estimated_hours_min"
       | "image_url"
       | "is_active"
       | "sort_order"

@@ -38,6 +38,7 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
   const [unit, setUnit] = useState<Service["unit"]>("kg");
   const [price, setPrice] = useState("");
   const [hours, setHours] = useState("24");
+  const [hoursMin, setHoursMin] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [sortOrder, setSortOrder] = useState("0");
   const [tiered, setTiered] = useState(false);
@@ -56,6 +57,7 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
     setUnit((service?.unit as Service["unit"]) ?? "kg");
     setPrice(service ? String(service.price) : "");
     setHours(String(service?.estimated_hours ?? 24));
+    setHoursMin(service?.estimated_hours_min ? String(service.estimated_hours_min) : "");
     setImageUrl(service?.image_url ?? "");
     setSortOrder(String(service?.sort_order ?? 0));
 
@@ -78,6 +80,19 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
       const parsedHours = Number(hours);
       if (!Number.isFinite(parsedHours) || parsedHours < 0) {
         throw new Error("Enter the expected turnaround in hours.");
+      }
+
+      // The shop quotes a range for wash time: fastest when the queue is short,
+      // the normal figure when it is busy.
+      let parsedHoursMin: number | null = null;
+      if (hoursMin.trim() !== "") {
+        parsedHoursMin = Number(hoursMin);
+        if (!Number.isFinite(parsedHoursMin) || parsedHoursMin <= 0) {
+          throw new Error("Enter the fastest turnaround in hours, or leave it empty.");
+        }
+        if (parsedHoursMin >= parsedHours) {
+          throw new Error("The fastest turnaround must be shorter than the normal turnaround.");
+        }
       }
 
       let parsedBase: number | null = null;
@@ -116,6 +131,7 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
         unit,
         price: parsedPrice,
         estimated_hours: parsedHours,
+        estimated_hours_min: parsedHoursMin,
         image_url: imageUrl.trim() || null,
         sort_order: Number(sortOrder) || 0,
         base_quantity: parsedBase,
@@ -216,7 +232,7 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="service-hours">Turnaround (hours)</Label>
+            <Label htmlFor="service-hours">Normal turnaround (hours)</Label>
             <Input
               id="service-hours"
               type="number"
@@ -224,6 +240,20 @@ export function ServiceFormDialog({ service, trigger }: { service?: Service; tri
               value={hours}
               onChange={(event) => setHours(event.target.value)}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="service-hours-min">Fastest turnaround (hours, optional)</Label>
+            <Input
+              id="service-hours-min"
+              type="number"
+              min={0}
+              value={hoursMin}
+              onChange={(event) => setHoursMin(event.target.value)}
+              placeholder="e.g. 2"
+            />
+            <p className="text-xs text-muted-foreground">
+              Set this when the shop quotes a range — for example 2 to 3 hours, depending on the queue.
+            </p>
           </div>
         </div>
 
