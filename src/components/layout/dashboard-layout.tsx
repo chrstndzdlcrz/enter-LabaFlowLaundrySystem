@@ -62,7 +62,7 @@ function NavList({ groups, onNavigate }: { groups: NavGroup[]; onNavigate?: () =
 }
 
 function UserMenu() {
-  const { profile, role, signOut } = useAuth();
+  const { profile, role, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -97,12 +97,13 @@ function UserMenu() {
             <UserIcon className="mr-2 h-4 w-4" aria-hidden="true" />
             My profile
           </DropdownMenuItem>
-        ) : (
+        ) : isAdmin ? (
+          /* Owner only: a seller has no business managing staff accounts. */
           <DropdownMenuItem onSelect={() => navigate("/manage/staff")}>
             <ShieldCheck className="mr-2 h-4 w-4" aria-hidden="true" />
-            Staff & roles
+            Staff &amp; roles
           </DropdownMenuItem>
-        )}
+        ) : null}
         <DropdownMenuItem onSelect={() => void signOut().then(() => navigate("/"))}>
           <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
           Sign out

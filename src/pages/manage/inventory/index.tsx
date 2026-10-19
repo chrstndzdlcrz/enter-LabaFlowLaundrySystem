@@ -33,6 +33,7 @@ const REASON_LABELS: Record<string, string> = {
 
 export default function ManageInventory() {
   const [itemFilter, setItemFilter] = useState<string>(ALL_ITEMS);
+  const [showHidden, setShowHidden] = useState(false);
 
   const inventoryQuery = useQuery({ queryKey: ["inventory"], queryFn: listInventory });
   const movementsQuery = useQuery({
@@ -40,7 +41,8 @@ export default function ManageInventory() {
     queryFn: () => listMovements({ itemId: itemFilter === ALL_ITEMS ? undefined : itemFilter, limit: 60 }),
   });
 
-  const items = inventoryQuery.data ?? [];
+  const allItems = inventoryQuery.data ?? [];
+  const items = allItems.filter((item) => showHidden || item.is_active);
   const lowStock = items.filter((item) => Number(item.quantity) <= Number(item.low_stock_threshold));
 
   return (
@@ -48,7 +50,19 @@ export default function ManageInventory() {
       <PageHeader
         title="Supplies & stock"
         description="Soap and everything else the shop consumes, how full each supply is, and the reorder level you keep."
-        actions={<ItemFormDialog />}
+        actions={
+          <>
+            <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Switch
+                checked={showHidden}
+                onCheckedChange={setShowHidden}
+                aria-label="Show supplies that are no longer used"
+              />
+              Show hidden
+            </label>
+            <ItemFormDialog />
+          </>
+        }
       />
 
       {lowStock.length > 0 ? (

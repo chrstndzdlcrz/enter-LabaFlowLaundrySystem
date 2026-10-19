@@ -1,0 +1,29 @@
+-- GCash collection details, shown to customers and staff when a payment is due.
+-- The QR itself is the shop's own GCash QR image, so money always goes to the
+-- seller's account; the amount is shown beside it.
+alter table public.shop_settings
+  add column if not exists gcash_qr_url text,
+  add column if not exists gcash_name text,
+  add column if not exists gcash_number text;
+
+update public.shop_settings
+   set gcash_number = coalesce(gcash_number, phone),
+       updated_at = now()
+ where id;
+
+-- Hangers and stain remover are not stocked any more: switched off rather than
+-- deleted, so their past stock movements stay on record.
+update public.inventory_items
+   set is_active = false, is_placeholder = false, updated_at = now()
+ where name in ('Hangers', 'Stain Remover');
+
+-- Nothing in the shop is a "placeholder" any more.
+update public.inventory_items
+   set is_placeholder = false
+ where is_placeholder;
+
+-- The demo accounts are no longer usable to sign in. Their rows stay so the sample
+-- orders they hold keep their name, and an admin can still see them as switched off.
+update public.profiles
+   set is_active = false, updated_at = now()
+ where email in ('demo.admin@labaflow.test', 'demo.staff@labaflow.test', 'demo.customer@labaflow.test');

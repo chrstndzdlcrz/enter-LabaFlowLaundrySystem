@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { getReceiptForOrder, recordPayment } from "@/lib/api/orders";
 import { fetchShopSettings, paymentChannelsOf } from "@/lib/api/settings";
+import { GcashPanel } from "@/components/payments/gcash-panel";
 import { alertError, errorMessageFrom, flashSuccess } from "@/lib/alerts";
 import { formatCurrency } from "@/lib/format";
 
@@ -161,6 +162,10 @@ export function PaymentDialog({
                 disabled={remaining <= 0}
               />
             </div>
+          ) : null}
+
+          {channel === "GCash" && remaining > 0 ? (
+            <GcashPanel amountDue={remaining} orderCode={orderCode} />
           ) : null}
 
           <div className="space-y-2">

@@ -30,6 +30,9 @@ export default function ManageSettings() {
     receipt_footer: "",
     consumption_stage: "in_progress",
     default_low_stock_threshold: "5",
+    gcash_qr_url: "",
+    gcash_name: "",
+    gcash_number: "",
   });
   const [channels, setChannels] = useState<string[]>([]);
   const [newChannel, setNewChannel] = useState("");
@@ -48,6 +51,9 @@ export default function ManageSettings() {
       receipt_footer: settings.receipt_footer ?? "",
       consumption_stage: settings.consumption_stage,
       default_low_stock_threshold: String(settings.default_low_stock_threshold),
+      gcash_qr_url: settings.gcash_qr_url ?? "",
+      gcash_name: settings.gcash_name ?? "",
+      gcash_number: settings.gcash_number ?? settings.phone ?? "",
     });
     setChannels(paymentChannelsOf(settings));
   }, [settingsQuery.data]);
@@ -74,6 +80,9 @@ export default function ManageSettings() {
         consumption_stage: form.consumption_stage,
         default_low_stock_threshold: threshold,
         payment_channels: channels as never,
+        gcash_qr_url: form.gcash_qr_url.trim() || null,
+        gcash_name: form.gcash_name.trim() || null,
+        gcash_number: form.gcash_number.trim() || null,
       });
     },
     onSuccess: async () => {
@@ -248,6 +257,51 @@ export default function ManageSettings() {
                       setForm({ ...form, default_low_stock_threshold: event.target.value })
                     }
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-display text-lg">GCash payments</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Customers and staff see this when a payment is due: the amount to send, and your own
+                  GCash QR. Because it is your QR, the money goes straight to your account.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="settings-gcash-qr">Your GCash QR image link</Label>
+                  <Input
+                    id="settings-gcash-qr"
+                    value={form.gcash_qr_url}
+                    onChange={(event) => setForm({ ...form, gcash_qr_url: event.target.value })}
+                    placeholder="https://…"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Open GCash → your QR code → save or screenshot it, then paste a public link to that
+                    image here. Leave it empty and the app will ask customers to pay at the counter.
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="settings-gcash-name">GCash account name</Label>
+                    <Input
+                      id="settings-gcash-name"
+                      value={form.gcash_name}
+                      onChange={(event) => setForm({ ...form, gcash_name: event.target.value })}
+                      placeholder="Lab-a-Day Laundry Shop"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="settings-gcash-number">GCash number to send to</Label>
+                    <Input
+                      id="settings-gcash-number"
+                      value={form.gcash_number}
+                      onChange={(event) => setForm({ ...form, gcash_number: event.target.value })}
+                      placeholder="09611308218"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>

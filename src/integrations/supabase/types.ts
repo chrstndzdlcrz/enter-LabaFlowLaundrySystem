@@ -4273,6 +4273,9 @@ export type Database = {
           currency: string
           default_low_stock_threshold: number
           email: string | null
+          gcash_name: string | null
+          gcash_number: string | null
+          gcash_qr_url: string | null
           id: boolean
           payment_channels: Json
           phone: string | null
@@ -4288,6 +4291,9 @@ export type Database = {
           currency?: string
           default_low_stock_threshold?: number
           email?: string | null
+          gcash_name?: string | null
+          gcash_number?: string | null
+          gcash_qr_url?: string | null
           id?: boolean
           payment_channels?: Json
           phone?: string | null
@@ -4303,6 +4309,9 @@ export type Database = {
           currency?: string
           default_low_stock_threshold?: number
           email?: string | null
+          gcash_name?: string | null
+          gcash_number?: string | null
+          gcash_qr_url?: string | null
           id?: boolean
           payment_channels?: Json
           phone?: string | null

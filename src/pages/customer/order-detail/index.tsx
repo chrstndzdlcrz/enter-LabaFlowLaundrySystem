@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { QueryState } from "@/components/common/query-state";
 import { OrderItemsTable } from "@/components/orders/order-items-table";
 import { OrderTimeline } from "@/components/orders/order-timeline";
+import { GcashPanel } from "@/components/payments/gcash-panel";
 import { supabase } from "@/integrations/supabase/client";
 import { cancelMyOrder, getOrder, getOrderHistory, getReceiptForOrder } from "@/lib/api/orders";
 import { realtimeTopic } from "@/lib/realtime";
@@ -221,6 +222,16 @@ export default function CustomerOrderDetail() {
                         </p>
                         <p className="text-sm text-muted-foreground">{order.notes}</p>
                       </div>
+                    </>
+                  ) : null}
+
+                  {Number(order.total_amount) - Number(order.amount_paid) > 0 ? (
+                    <>
+                      <Separator />
+                      <GcashPanel
+                        amountDue={Number(order.total_amount) - Number(order.amount_paid)}
+                        orderCode={order.order_code}
+                      />
                     </>
                   ) : null}
                 </CardContent>

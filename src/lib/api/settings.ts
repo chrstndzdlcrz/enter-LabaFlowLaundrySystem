@@ -22,6 +22,9 @@ export async function updateShopSettings(
       | "consumption_stage"
       | "default_low_stock_threshold"
       | "payment_channels"
+      | "gcash_qr_url"
+      | "gcash_name"
+      | "gcash_number"
     >
   >,
 ): Promise<ShopSettings> {
