@@ -28,11 +28,11 @@ const schema = z.object({
   identifier: z
     .string()
     .trim()
-    .min(1, "Enter your email address or your mobile number")
+    .min(1, "Enter your email or number")
     .refine(
       (value) =>
         value.includes("@") ? EMAIL_PATTERN.test(value) : PHONE_PATTERN.test(value),
-      "Enter a valid email address, or the mobile number on your account",
+      "Enter a valid email address, or a valid number",
     ),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
@@ -70,7 +70,7 @@ const Login = () => {
       const message = errorMessageFrom(error);
       setFormError(
         /invalid|credential|not correct/i.test(message)
-          ? "That email or mobile number, or the password, is not correct."
+          ? "That email or number, or the password, is not correct."
           : message,
       );
       return;
@@ -110,7 +110,7 @@ const Login = () => {
             name="identifier"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email or mobile number</FormLabel>
+                <FormLabel>Email or number</FormLabel>
                 <FormControl>
                   <Input
                     autoComplete="username"
@@ -120,7 +120,7 @@ const Login = () => {
                   />
                 </FormControl>
                 <FormDescription>
-                  Use the same email address or mobile number you registered with.
+                  Use the same email or number you registered with.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
