@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import { ProtectedRoute, AdminOnly } from "@/components/auth/protected-route";
+import { AdminOnly, ProtectedRoute } from "@/components/auth/protected-route";
+import { UnexpectedErrorCard } from "@/components/common/unexpected-error";
 import { FullPageLoader } from "@/components/common/loading-state";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { customerNav, manageNav } from "@/components/layout/nav-items";
@@ -72,11 +73,13 @@ export const routers = [
     path: "/login",
     name: "login",
     element: <Login />,
+    errorElement: <UnexpectedErrorCard />,
   },
   {
     path: "/register",
     name: "register",
     element: <Register />,
+    errorElement: <UnexpectedErrorCard />,
   },
   {
     // Referenced by the Google sign-in consent screen as the privacy policy.
@@ -99,6 +102,7 @@ export const routers = [
     path: "/app",
     name: "customerArea",
     element: <CustomerArea />,
+    errorElement: <UnexpectedErrorCard />,
     children: [
       { index: true, name: "customerDashboard", element: withFallback(<CustomerDashboard />) },
       { path: "book", name: "customerBookService", element: withFallback(<BookService />) },
@@ -127,6 +131,7 @@ export const routers = [
     path: "/manage",
     name: "manageArea",
     element: <ManageArea />,
+    errorElement: <UnexpectedErrorCard />,
     children: [
       { index: true, name: "manageDashboard", element: withFallback(<ManageDashboard />) },
       { path: "orders", name: "manageOrders", element: withFallback(<ManageOrders />) },

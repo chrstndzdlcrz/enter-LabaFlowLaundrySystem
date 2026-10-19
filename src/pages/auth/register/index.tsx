@@ -39,24 +39,26 @@ const schema = z
     confirm_password: z.string(),
   })
   .superRefine((values, ctx) => {
-    const typedEmail = values.identifier.includes("@");
+    const identifier = (values.identifier ?? "").trim();
+    const secondary = (values.secondary ?? "").trim();
+    const typedEmail = identifier.includes("@");
 
     if (typedEmail) {
-      if (!EMAIL_PATTERN.test(values.identifier)) {
+      if (!EMAIL_PATTERN.test(identifier)) {
         ctx.addIssue({ path: ["identifier"], message: "Enter a valid email address" });
       }
-      if (values.secondary === "") {
+      if (secondary === "") {
         ctx.addIssue({ path: ["secondary"], message: "Mobile number is required" });
-      } else if (!PHONE_PATTERN.test(values.secondary)) {
+      } else if (!PHONE_PATTERN.test(secondary)) {
         ctx.addIssue({ path: ["secondary"], message: "Enter a valid mobile number" });
       }
     } else {
-      if (!PHONE_PATTERN.test(values.identifier)) {
+      if (!PHONE_PATTERN.test(identifier)) {
         ctx.addIssue({ path: ["identifier"], message: "Enter a valid mobile number" });
       }
-      if (values.secondary === "") {
+      if (secondary === "") {
         ctx.addIssue({ path: ["secondary"], message: "Email address is required" });
-      } else if (!EMAIL_PATTERN.test(values.secondary)) {
+      } else if (!EMAIL_PATTERN.test(secondary)) {
         ctx.addIssue({ path: ["secondary"], message: "Enter a valid email address" });
       }
     }
@@ -84,15 +86,19 @@ const Register = () => {
     mode: "onSubmit",
   });
 
-  const identifier = form.watch("identifier");
+  // Never assumed to be a string: during a hot reload the form can render once with
+  // stale values, and an unguarded read would blank the page.
+  const identifier = form.watch("identifier") ?? "";
   const typedEmail = identifier.includes("@");
   const typedNumber = identifier.trim() !== "" && !typedEmail;
 
   const onSubmit = async (values: FormValues) => {
     setFormError(null);
 
-    const email = values.identifier.includes("@") ? values.identifier : values.secondary;
-    const phone = values.identifier.includes("@") ? values.secondary : values.identifier;
+    const first = (values.identifier ?? "").trim();
+    const second = (values.secondary ?? "").trim();
+    const email = first.includes("@") ? first : second;
+    const phone = first.includes("@") ? second : first;
 
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
