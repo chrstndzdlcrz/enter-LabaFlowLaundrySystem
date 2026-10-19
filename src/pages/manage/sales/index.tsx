@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { QueryState } from "@/components/common/query-state";
 import { SalesChart } from "@/components/sales/sales-chart";
 import { ordersInRange, paymentsInRange, rangeFor, salesSummary, type ReportGranularity } from "@/lib/api/reports";
+import { listServices } from "@/lib/api/services";
 import { formatCurrency, formatQuantity } from "@/lib/format";
 
 export default function ManageReports() {
@@ -30,6 +31,12 @@ export default function ManageReports() {
     queryKey: ["orders", "range", preset],
     queryFn: () => ordersInRange(range.from, range.to),
   });
+  const servicesQuery = useQuery({ queryKey: ["services", "active"], queryFn: () => listServices() });
+
+  const activeServiceNames = useMemo(
+    () => new Set((servicesQuery.data ?? []).map((service) => service.name)),
+    [servicesQuery.data],
+  );
 
   const payments = paymentsQuery.data ?? [];
   const orders = ordersQuery.data ?? [];
@@ -51,6 +58,10 @@ export default function ManageReports() {
     const totals = new Map<string, { name: string; quantity: number; unit: string; amount: number }>();
     for (const order of orders) {
       for (const item of order.order_items) {
+        // Only the services the shop actually offers: anything switched off earlier
+        // stays out of the service mix.
+        if (!activeServiceNames.has(item.service_name)) continue;
+
         const current = totals.get(item.service_name) ?? {
           name: item.service_name,
           quantity: 0,
@@ -63,7 +74,7 @@ export default function ManageReports() {
       }
     }
     return Array.from(totals.values()).sort((a, b) => b.amount - a.amount);
-  }, [orders]);
+  }, [orders, activeServiceNames]);
 
   return (
     <div className="space-y-6">

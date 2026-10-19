@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { KeyRound, Plus, ShieldCheck, UserCog } from "lucide-react";
+import { KeyRound, Plus, UserCog } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -207,16 +207,6 @@ export default function ManageStaff() {
         description="Who can work the counter, and who can manage the shop. Role changes are enforced by the backend."
         actions={<CreateStaffDialog />}
       />
-
-      <Card className="border-info/30 bg-info/5">
-        <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-info" aria-hidden="true" />
-          <span>
-            Staff can process orders, record payments and answer customers, but cannot manage staff, change
-            prices, or read sales reports. Nobody can promote themselves — the backend refuses it.
-          </span>
-        </CardContent>
-      </Card>
 
       <QueryState isLoading={profilesQuery.isLoading} error={profilesQuery.error}>
         <div className="overflow-x-auto rounded-2xl border border-border bg-card">
