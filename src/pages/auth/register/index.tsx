@@ -5,7 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, UserPlus } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -14,25 +22,48 @@ import { supabase } from "@/integrations/supabase/client";
 import { EMAIL_PATTERN, PHONE_PATTERN } from "@/lib/constants";
 import { errorMessageFrom } from "@/lib/alerts";
 
+/**
+ * One field decides what we ask next: an email address or a mobile number.
+ *
+ * The account itself is always an email address, because that is what the backend
+ * authenticates; the mobile number is how the shop reaches the customer and how the
+ * customer can sign in later. So whichever of the two the customer types first, we
+ * ask for the other one.
+ */
 const schema = z
   .object({
     full_name: z.string().trim().min(2, "Enter your full name"),
-    email: z
-      .string()
-      .trim()
-      .min(1, "Email is required")
-      .regex(EMAIL_PATTERN, "Enter a valid email address, like name@example.com"),
-    phone: z
-      .string()
-      .trim()
-      .min(1, "Mobile number is required")
-      .refine((value) => PHONE_PATTERN.test(value), "Enter a valid mobile number, like 0917 123 4567"),
+    identifier: z.string().trim().min(1, "Enter your email or number"),
+    secondary: z.string().trim(),
     password: z.string().min(8, "Use at least 8 characters"),
     confirm_password: z.string(),
   })
-  .refine((values) => values.password === values.confirm_password, {
-    path: ["confirm_password"],
-    message: "The two passwords do not match",
+  .superRefine((values, ctx) => {
+    const typedEmail = values.identifier.includes("@");
+
+    if (typedEmail) {
+      if (!EMAIL_PATTERN.test(values.identifier)) {
+        ctx.addIssue({ path: ["identifier"], message: "Enter a valid email address" });
+      }
+      if (values.secondary === "") {
+        ctx.addIssue({ path: ["secondary"], message: "Mobile number is required" });
+      } else if (!PHONE_PATTERN.test(values.secondary)) {
+        ctx.addIssue({ path: ["secondary"], message: "Enter a valid mobile number" });
+      }
+    } else {
+      if (!PHONE_PATTERN.test(values.identifier)) {
+        ctx.addIssue({ path: ["identifier"], message: "Enter a valid mobile number" });
+      }
+      if (values.secondary === "") {
+        ctx.addIssue({ path: ["secondary"], message: "Email address is required" });
+      } else if (!EMAIL_PATTERN.test(values.secondary)) {
+        ctx.addIssue({ path: ["secondary"], message: "Enter a valid email address" });
+      }
+    }
+
+    if (values.password !== values.confirm_password) {
+      ctx.addIssue({ path: ["confirm_password"], message: "The two passwords do not match" });
+    }
   });
 
 type FormValues = z.infer<typeof schema>;
@@ -43,15 +74,28 @@ const Register = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { full_name: "", email: "", phone: "", password: "", confirm_password: "" },
+    defaultValues: {
+      full_name: "",
+      identifier: "",
+      secondary: "",
+      password: "",
+      confirm_password: "",
+    },
     mode: "onSubmit",
   });
+
+  const identifier = form.watch("identifier");
+  const typedEmail = identifier.includes("@");
+  const typedNumber = identifier.trim() !== "" && !typedEmail;
 
   const onSubmit = async (values: FormValues) => {
     setFormError(null);
 
+    const email = values.identifier.includes("@") ? values.identifier : values.secondary;
+    const phone = values.identifier.includes("@") ? values.secondary : values.identifier;
+
     const { data, error } = await supabase.auth.signUp({
-      email: values.email.trim(),
+      email: email.trim(),
       password: values.password,
       options: {
         // Keeps the trailing slash and follows the deployment base, so the
@@ -59,7 +103,7 @@ const Register = () => {
         emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
         data: {
           full_name: values.full_name.trim(),
-          phone: values.phone.trim() || null,
+          phone: phone.trim(),
         },
       },
     });
@@ -124,31 +168,60 @@ const Register = () => {
 
           <FormField
             control={form.control}
-            name="email"
+            name="identifier"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email address</FormLabel>
+                <FormLabel>Email or number</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="name@example.com" {...field} />
+                  <Input
+                    autoComplete="username"
+                    placeholder="name@example.com or 0917 123 4567"
+                    {...field}
+                  />
                 </FormControl>
+                <FormDescription>
+                  Use either one — we will ask for the other so the shop can reach you and you can sign
+                  in with whichever you remember.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mobile number</FormLabel>
-                <FormControl>
-                  <Input inputMode="tel" autoComplete="tel" placeholder="0917 123 4567" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {typedEmail || typedNumber ? (
+            <FormField
+              control={form.control}
+              name="secondary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{typedEmail ? "Mobile number" : "Email address"}</FormLabel>
+                  <FormControl>
+                    {typedEmail ? (
+                      <Input
+                        inputMode="tel"
+                        autoComplete="tel"
+                        placeholder="0917 123 4567"
+                        {...field}
+                      />
+                    ) : (
+                      <Input
+                        type="email"
+                        autoComplete="email"
+                        placeholder="name@example.com"
+                        {...field}
+                      />
+                    )}
+                  </FormControl>
+                  <FormDescription>
+                    {typedEmail
+                      ? "The number the shop will call or text about your orders."
+                      : "Your email address — it is the login for your account."}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
 
           <FormField
             control={form.control}

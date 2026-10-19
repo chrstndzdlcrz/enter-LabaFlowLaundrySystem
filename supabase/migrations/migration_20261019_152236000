@@ -1,0 +1,6 @@
+-- The account created while verifying the new registration flow is switched off so it
+-- does not appear as an active customer.
+update public.profiles
+   set is_active = false,
+       updated_at = now()
+ where email = 'reg.check@labaday.com';
