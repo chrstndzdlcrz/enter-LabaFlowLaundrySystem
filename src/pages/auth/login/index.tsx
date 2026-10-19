@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,6 +44,12 @@ const Login = () => {
   const location = useLocation();
   const [formError, setFormError] = useState<string | null>(null);
 
+  /** Where the visitor was heading before the sign-in wall stopped them. */
+  const from = (location.state as { from?: string } | null)?.from;
+  const goAfterSignIn = useCallback(() => {
+    navigate(from ?? "/dashboard", { replace: true });
+  }, [from, navigate]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { identifier: "", password: "" },
@@ -76,8 +82,7 @@ const Login = () => {
       return;
     }
 
-    const from = (location.state as { from?: string } | null)?.from;
-    navigate(from ?? "/dashboard", { replace: true });
+    goAfterSignIn();
   };
 
   return (
@@ -154,7 +159,7 @@ const Login = () => {
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      <GoogleSignInButton label="Sign in with Google" />
+      <GoogleSignInButton label="Sign in with Google" onSignedIn={goAfterSignIn} />
     </AuthShell>
   );
 };

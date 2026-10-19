@@ -17,7 +17,7 @@ It has never been compiled here — see its README before believing anything abo
 | Area | State |
 |---|---|
 | Email/password sign-up and sign-in | Working, verified against the live backend |
-| Google sign-in | Provider enabled and credentials configured through Enter Cloud. The consent round-trip itself has **not** been independently verified here |
+| Google sign-in | Enabled in the project's authentication settings. Runs through Google's sign-in widget with the redirect round-trip as fallback; the account round-trip itself has **not** been independently verified here |
 | Role-based routing (customer / staff / admin) | Working; the backend is the authority |
 | Public site: services, prices, FAQ, CTAs | Working, reads the live catalogue |
 | Booking with price preview | Working; price is computed server-side |
@@ -232,8 +232,28 @@ defines, the Google deep link and the FCM steps. The source has not been compile
 
 ### 4. Google sign-in
 
-Enabled in the project's authentication settings. If the credentials ever need
-replacing, the OAuth client needs this redirect URI:
+Google sign-in runs through Google's own sign-in widget, which hands the page an
+ID token that the backend turns into a session. Nothing round-trips through a
+redirect, so it works from whatever address the site is served from — the Enter
+preview and the GitHub Pages site alike — and the customer never leaves the page.
+
+Two things about the OAuth round-trip are worth knowing, because the deployed site
+used to fall into both:
+
+- The backend only returns a redirect round-trip to an origin on its allow-list,
+  and that list holds the Enter preview and published addresses only. From any
+  other address the round-trip is dropped and the browser is sent to the bare
+  backend host, which answers with a server sign-in prompt. The app therefore
+  refuses to start a round-trip from an address that is not allowed, and shows a
+  plain explanation instead.
+- On the Google side the OAuth client needs the site's origin under
+  **Authorized JavaScript origins** (`https://<user>.github.io`), and the app is
+  only offered to accounts that the consent screen allows: while the screen is in
+  **Testing**, only the accounts listed as test users can sign in, and everyone
+  else is refused with a 403.
+
+If the credentials ever need replacing, the OAuth client also needs this redirect
+URI, which the round-trip fallback uses:
 
 ```
 https://<your project ref>.supabase.opentrust.net/auth/v1/callback
@@ -266,11 +286,11 @@ Neither workflow has been executed from the development environment.
    URLs, the router, the service worker, the manifest and the sign-in redirects all
    resolve relative to wherever it is deployed. A project path like `/repo/` needs
    no edits and no rebuild.
-4. **Point Google and email confirmation at the new URL.** Sign-in round-trips only
-   return to the app if the deployed origin is allowed. Add the deployed URL to the
-   OAuth client's authorized JavaScript origins (and the managed backend's
-   `/auth/v1/callback` redirect URI), and add the deployed origin to the
-   authentication settings' redirect allow-list.
+4. **Allow the new address on the Google side.** Add the deployed origin
+   (`https://<user>.github.io`) to the OAuth client's **Authorized JavaScript
+   origins**. This is the step that makes Google sign-in work on the deployed
+   address; email and number sign-in need nothing. Keep the OAuth client's
+   consent screen published, or only its listed test users can sign in.
 
 **What the site needs from the backend.** Nothing changes when you deploy: the
 running app keeps using the same managed Supabase backend, with the publishable key

@@ -1,7 +1,15 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import Swal from "sweetalert2";
+import {
+  isRedirectReturnAllowed,
+  loadAuthSettings,
+  loadGoogleIdentity,
+  type GoogleIdentity,
+} from "@/lib/google-auth";
+
+const PRIMARY = "hsl(191, 85%, 33%)";
 
 /** Chrome mark for the Google identity button. */
 function GoogleMark() {
@@ -24,15 +32,135 @@ function GoogleMark() {
   );
 }
 
-export function GoogleSignInButton({ label = "Continue with Google" }: { label?: string }) {
-  const [pending, setPending] = useState(false);
+/**
+ * "widget"          Google's own account chooser, on top of this page.
+ * "redirect"        Full-page round-trip, used where the backend returns here.
+ * "unavailable"     Neither route works from this address.
+ */
+type Mode = "checking" | "widget" | "redirect" | "unavailable";
 
-  const handleClick = async () => {
+export function GoogleSignInButton({
+  label = "Continue with Google",
+  onSignedIn,
+}: {
+  label?: string;
+  onSignedIn?: () => void;
+}) {
+  const [mode, setMode] = useState<Mode>("checking");
+  const [pending, setPending] = useState(false);
+  const [buttonWidth, setButtonWidth] = useState(300);
+  const holderRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const identityRef = useRef<GoogleIdentity | null>(null);
+  const clientIdRef = useRef<string | null>(null);
+  const redirectAllowedRef = useRef(false);
+  const signedInRef = useRef(onSignedIn);
+  signedInRef.current = onSignedIn;
+
+  const finishWithCredential = useCallback(async (credential: string) => {
+    setPending(true);
+    const { error } = await supabase.auth.signInWithIdToken({ provider: "google", token: credential });
+    setPending(false);
+
+    if (error) {
+      console.error("Lab a Day: Google sign-in could not finish", error);
+      await Swal.fire({
+        icon: "warning",
+        title: "Google could not finish the sign-in",
+        text: "Your Google account was accepted, but the shop could not open the session. Please try again, or sign in with your email or number.",
+        confirmButtonColor: PRIMARY,
+      });
+      return;
+    }
+
+    signedInRef.current?.();
+  }, []);
+
+  // Decide, once, which route this address can use.
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const [identity, settings] = await Promise.all([loadGoogleIdentity(), loadAuthSettings()]);
+      if (cancelled) return;
+
+      const clientId = settings?.external_google_client_id ?? "";
+      if (identity && settings?.external_google_enabled && clientId) {
+        identityRef.current = identity;
+        clientIdRef.current = clientId;
+        setMode("widget");
+        console.info("Lab a Day: Google sign-in runs in this page (no redirect)");
+        return;
+      }
+
+      const target = `${window.location.origin}${import.meta.env.BASE_URL}`;
+      redirectAllowedRef.current = isRedirectReturnAllowed(settings, target);
+      setMode(redirectAllowedRef.current ? "redirect" : "unavailable");
+      console.info(
+        `Lab a Day: Google sign-in falls back to the redirect round-trip (${redirectAllowedRef.current ? "allowed" : "not allowed"} from ${window.location.origin})`,
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Google sizes its button in whole pixels, so keep it inside the card.
+  useEffect(() => {
+    const measure = () => {
+      const holder = measureRef.current;
+      if (!holder) return;
+      const available = Math.round(holder.clientWidth);
+      setButtonWidth(Math.min(400, Math.max(240, available)));
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [mode]);
+
+  useEffect(() => {
+    const holder = holderRef.current;
+    const identity = identityRef.current;
+    const clientId = clientIdRef.current;
+    if (mode !== "widget" || !holder || !identity || !clientId) return;
+
+    holder.replaceChildren();
+    identity.initialize({
+      client_id: clientId,
+      ux_mode: "popup",
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      callback: (response) => {
+        if (response.credential) void finishWithCredential(response.credential);
+      },
+    });
+    identity.renderButton(holder, {
+      type: "standard",
+      theme: "outline",
+      size: "large",
+      text: "continue_with",
+      shape: "rectangular",
+      logo_alignment: "left",
+      width: buttonWidth,
+    });
+
+    // Google draws nothing when this origin is not authorised for the client,
+    // which would leave a bare gap where the button should be, so fall back
+    // rather than leave the visitor with no way to sign in.
+    const guard = window.setTimeout(() => {
+      if (holder.childElementCount === 0) {
+        setMode(redirectAllowedRef.current ? "redirect" : "unavailable");
+      }
+    }, 2000);
+
+    return () => window.clearTimeout(guard);
+  }, [mode, buttonWidth, finishWithCredential]);
+
+  const startRedirect = async () => {
     setPending(true);
     try {
-      // Normal redirect flow. The redirect target always keeps a trailing slash and
-      // follows the deployment base, so the OAuth round-trip returns to the app
-      // itself rather than to the site root on a project-site deployment.
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` },
@@ -40,24 +168,47 @@ export function GoogleSignInButton({ label = "Continue with Google" }: { label?:
       if (error) throw error;
     } catch (error) {
       setPending(false);
-      // The technical cause (usually Google refusing an origin that is not yet
-      // allowed for this OAuth client) stays in the console; the customer gets
-      // something they can act on.
       console.error("Lab a Day: Google sign-in could not start", error);
       await Swal.fire({
         icon: "info",
-        title: "Google sign-in is not available here yet",
-        text: "You can still create an account or sign in with your email and password — everything else works normally.",
-        confirmButtonText: "Use email instead",
-        confirmButtonColor: "hsl(191, 85%, 33%)",
+        title: "Google sign-in is not available right now",
+        text: "You can still sign in with your email or number — everything else works normally.",
+        confirmButtonText: "Use email or number",
+        confirmButtonColor: PRIMARY,
       });
     }
   };
 
+  const explainUnavailable = async () => {
+    await Swal.fire({
+      icon: "info",
+      title: "Google sign-in is not set up for this address",
+      html: `This site is being served from <b>${window.location.host}</b>, which is not yet one of the addresses allowed to sign in with Google for this shop.<br><br>Your email or number works normally on every address.`,
+      confirmButtonText: "Use email or number",
+      confirmButtonColor: PRIMARY,
+    });
+  };
+
+  const handleClick = () => {
+    if (mode === "redirect") return startRedirect();
+    return explainUnavailable();
+  };
+
   return (
-    <Button type="button" variant="outline" className="w-full" onClick={handleClick} disabled={pending}>
-      <GoogleMark />
-      {pending ? "Opening Google…" : label}
-    </Button>
+    <div ref={measureRef} className="w-full">
+      <div ref={holderRef} className="flex w-full justify-center" />
+      {mode === "widget" ? null : (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={handleClick}
+          disabled={pending || mode === "checking"}
+        >
+          <GoogleMark />
+          {mode === "checking" ? "Loading Google…" : pending ? "Opening Google…" : label}
+        </Button>
+      )}
+    </div>
   );
 }

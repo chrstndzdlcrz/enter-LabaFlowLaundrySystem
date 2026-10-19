@@ -270,7 +270,10 @@ const Register = () => {
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      <GoogleSignInButton label="Continue with Google" />
+      <GoogleSignInButton
+        label="Continue with Google"
+        onSignedIn={() => navigate("/dashboard", { replace: true })}
+      />
     </AuthShell>
   );
 };
