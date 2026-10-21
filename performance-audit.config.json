@@ -1,0 +1,1263 @@
+{
+  "base": "/",
+  "routes": [
+    {
+      "url": "/",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ],
+      "lcpImage": "/assets/hero-p0KC70vP.webp"
+    },
+    {
+      "url": "/login",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/auth/login/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/register",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/auth/register/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/privacy",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/legal/privacy/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/terms",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/legal/terms/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/dashboard",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "app",
+      "initialDynamicImports": [
+        "src/pages/auth/redirect/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/app",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "app",
+      "initialDynamicImports": [
+        "src/pages/customer/dashboard/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    },
+    {
+      "url": "/manage",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "app",
+      "initialDynamicImports": [
+        "src/pages/manage/dashboard/index.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "_browser-ponyfill-7jwKhORh.js",
+          "trigger": "idle",
+          "reason": "Legacy-browser fallback the analytics SDK imports only when fetch and XHR are both missing"
+        },
+        {
+          "key": "src/pages/auth/login/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/auth/redirect/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the dashboard redirect"
+        },
+        {
+          "key": "src/pages/auth/register/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to the sign-in screen"
+        },
+        {
+          "key": "src/pages/customer/book/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/dashboard/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/notifications/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/profile/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/customer/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a customer screen"
+        },
+        {
+          "key": "src/pages/legal/privacy/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/legal/terms/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a legal page"
+        },
+        {
+          "key": "src/pages/manage/bookings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/chat/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/faqs/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/inventory/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/order-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/orders/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipt-detail/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/receipts/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/rfid/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/sales/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/services/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/settings/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "src/pages/manage/staff/index.tsx",
+          "trigger": "navigation",
+          "reason": "Reached only after navigating to a shop screen"
+        },
+        {
+          "key": "node_modules/.pnpm/sweetalert2@11.26.25/node_modules/sweetalert2/dist/sweetalert2.esm.all.js",
+          "trigger": "interaction",
+          "reason": "Alert library; imported the first time a confirmation or message is actually shown"
+        }
+      ]
+    }
+  ],
+  "ignoredHtml": [
+    {
+      "file": "offline.html",
+      "reason": "Service-worker offline fallback, fetched only when a navigation fails with no connection; it is linked from nowhere and is verified by the offline check"
+    }
+  ]
+}

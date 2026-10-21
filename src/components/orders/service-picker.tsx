@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import type { Service } from "@/lib/api/types";
+import { servicePhoto } from "@/lib/assets";
 import { UNIT_QUANTITY_LABEL } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -63,7 +64,7 @@ export function ServicePicker({
           >
             {service.image_url ? (
               <img
-                src={service.image_url}
+                src={servicePhoto(service.image_url)}
                 crossOrigin="anonymous"
                 alt=""
                 aria-hidden="true"

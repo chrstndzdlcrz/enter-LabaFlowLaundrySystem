@@ -5,17 +5,17 @@ import { FullPageLoader } from "@/components/common/loading-state";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { customerNav, manageNav } from "@/components/layout/nav-items";
 import Landing from "./pages/landing";
-import Login from "./pages/auth/login";
-import Register from "./pages/auth/register";
-import RoleRedirect from "./pages/auth/redirect";
-import PrivacyPolicy from "./pages/legal/privacy";
-import TermsOfService from "./pages/legal/terms";
 import NotFound from "./pages/NotFound";
 
 /**
  * The signed-in areas are loaded on demand so the public landing page stays light
  * on mobile. Each area gets its own chunk, including the reporting library.
  */
+const Login = lazy(() => import("./pages/auth/login"));
+const Register = lazy(() => import("./pages/auth/register"));
+const RoleRedirect = lazy(() => import("./pages/auth/redirect"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/privacy"));
+const TermsOfService = lazy(() => import("./pages/legal/terms"));
 const CustomerDashboard = lazy(() => import("./pages/customer/dashboard"));
 const BookService = lazy(() => import("./pages/customer/book"));
 const CustomerOrders = lazy(() => import("./pages/customer/orders"));
@@ -40,8 +40,9 @@ const ManageRfid = lazy(() => import("./pages/manage/rfid"));
 const ManageStaff = lazy(() => import("./pages/manage/staff"));
 const ManageSettings = lazy(() => import("./pages/manage/settings"));
 
-const withFallback = (node: React.ReactNode) => (
-  <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
+/** Route-level split: the fallback is stable and sized, so nothing jumps. */
+const withFallback = (node: React.ReactNode, label?: string) => (
+  <Suspense fallback={<FullPageLoader label={label} />}>{node}</Suspense>
 );
 
 /** Customer area: their own orders, receipts, notifications, chat and profile. */
@@ -72,31 +73,31 @@ export const routers = [
   {
     path: "/login",
     name: "login",
-    element: <Login />,
+    element: withFallback(<Login />, "Loading the sign-in screen…"),
     errorElement: <UnexpectedErrorCard />,
   },
   {
     path: "/register",
     name: "register",
-    element: <Register />,
+    element: withFallback(<Register />, "Loading the registration screen…"),
     errorElement: <UnexpectedErrorCard />,
   },
   {
     // Referenced by the Google sign-in consent screen as the privacy policy.
     path: "/privacy",
     name: "privacyPolicy",
-    element: <PrivacyPolicy />,
+    element: withFallback(<PrivacyPolicy />, "Loading the privacy policy…"),
   },
   {
     // Referenced by the Google sign-in consent screen as the terms of service.
     path: "/terms",
     name: "termsOfService",
-    element: <TermsOfService />,
+    element: withFallback(<TermsOfService />, "Loading the terms of service…"),
   },
   {
     path: "/dashboard",
     name: "dashboardRedirect",
-    element: <RoleRedirect />,
+    element: withFallback(<RoleRedirect />),
   },
   {
     path: "/app",

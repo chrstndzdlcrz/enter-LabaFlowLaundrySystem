@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Swal from "sweetalert2";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { loadAlerts } from "@/lib/alerts";
 import {
   isRedirectReturnAllowed,
   loadAuthSettings,
@@ -10,6 +10,24 @@ import {
 } from "@/lib/google-auth";
 
 const PRIMARY = "hsl(191, 85%, 33%)";
+
+/** One place for the explanations this button can show. */
+async function explain(options: {
+  title: string;
+  text?: string;
+  html?: string;
+  icon?: "info" | "warning";
+}) {
+  const Swal = await loadAlerts();
+  await Swal.fire({
+    icon: options.icon ?? "info",
+    title: options.title,
+    text: options.text,
+    html: options.html,
+    confirmButtonText: "Use email or number",
+    confirmButtonColor: PRIMARY,
+  });
+}
 
 /** Chrome mark for the Google identity button. */
 function GoogleMark() {
@@ -64,11 +82,10 @@ export function GoogleSignInButton({
 
     if (error) {
       console.error("Lab a Day: Google sign-in could not finish", error);
-      await Swal.fire({
+      await explain({
         icon: "warning",
         title: "Google could not finish the sign-in",
         text: "Your Google account was accepted, but the shop could not open the session. Please try again, or sign in with your email or number.",
-        confirmButtonColor: PRIMARY,
       });
       return;
     }
@@ -169,23 +186,17 @@ export function GoogleSignInButton({
     } catch (error) {
       setPending(false);
       console.error("Lab a Day: Google sign-in could not start", error);
-      await Swal.fire({
-        icon: "info",
+      await explain({
         title: "Google sign-in is not available right now",
         text: "You can still sign in with your email or number — everything else works normally.",
-        confirmButtonText: "Use email or number",
-        confirmButtonColor: PRIMARY,
       });
     }
   };
 
   const explainUnavailable = async () => {
-    await Swal.fire({
-      icon: "info",
+    await explain({
       title: "Google sign-in is not set up for this address",
       html: `This site is being served from <b>${window.location.host}</b>, which is not yet one of the addresses allowed to sign in with Google for this shop.<br><br>Your email or number works normally on every address.`,
-      confirmButtonText: "Use email or number",
-      confirmButtonColor: PRIMARY,
     });
   };
 

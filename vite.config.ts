@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => {
     base: '/',
     build: {
       outDir: 'dist',
+      // A manifest lets the build be audited for what each entry actually loads.
+      manifest: true,
     }
   };
 });

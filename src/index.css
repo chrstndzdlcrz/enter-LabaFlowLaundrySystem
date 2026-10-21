@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap");
-
+/* The webfonts are declared once, in index.html. A second @import here would ask
+   the browser for the same stylesheet a second time, and block the stylesheet
+   itself while it did. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

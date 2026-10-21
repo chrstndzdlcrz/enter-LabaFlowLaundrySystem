@@ -58,11 +58,12 @@ export function HeroSection({ shopName }: { shopName: string }) {
           <div className="absolute -inset-4 rounded-[2rem] bg-gradient-ocean opacity-15 blur-2xl" aria-hidden="true" />
           <img
             src={LABAFLOW_IMAGES.hero}
-            crossOrigin="anonymous"
             alt="Folded linens stacked beside the washing machines inside Lab-a-Day Laundry Shop"
             className="relative w-full rounded-[1.75rem] border border-border object-cover shadow-elegant"
-            width={1024}
-            height={576}
+            width={1200}
+            height={670}
+            decoding="async"
+            fetchPriority="high"
           />
           <Card className="relative -mt-10 ml-4 mr-4 border-border/80 bg-card/95 backdrop-blur sm:ml-8 sm:mr-8">
             <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">

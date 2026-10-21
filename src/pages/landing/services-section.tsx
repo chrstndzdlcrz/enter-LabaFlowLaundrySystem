@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/common/empty-state";
 import { LoadingState } from "@/components/common/loading-state";
 import { PlaceholderBadge } from "@/components/common/status-badge";
 import { listServices } from "@/lib/api/services";
+import { servicePhoto } from "@/lib/assets";
 import { servicePricingSummary, serviceTurnaround } from "@/lib/pricing";
 
 /**
@@ -63,13 +64,13 @@ export function ServicesSection() {
               >
                 {service.image_url ? (
                   <img
-                    src={service.image_url}
-                    crossOrigin="anonymous"
+                    src={servicePhoto(service.image_url)}
                     alt={`${service.name} at Lab-a-Day Laundry Shop`}
                     className="h-44 w-full object-cover"
-                    width={800}
-                    height={600}
+                    width={900}
+                    height={672}
                     loading="lazy"
+                    decoding="async"
                   />
                 ) : (
                   /* A service still waiting for its photo keeps the grid even. */

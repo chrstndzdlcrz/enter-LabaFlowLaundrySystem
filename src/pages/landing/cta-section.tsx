@@ -15,10 +15,11 @@ export function CtaSection({ settings }: { settings: ShopSettings | undefined })
         <div className="relative overflow-hidden rounded-[2rem] border border-border shadow-elegant">
           <img
             src={LABAFLOW_IMAGES.bubbleTexture}
-            crossOrigin="anonymous"
             alt=""
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-background/80" aria-hidden="true" />
           <div className="relative px-6 py-12 sm:px-12 sm:py-16">

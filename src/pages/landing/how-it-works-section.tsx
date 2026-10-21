@@ -61,19 +61,21 @@ export function HowItWorksSection() {
           <div className="grid gap-4 sm:grid-cols-2">
             <img
               src={LABAFLOW_IMAGES.foldedLinens}
-              crossOrigin="anonymous"
               alt="Freshly laundered folded towels and bedsheets stacked on a counter"
               className="h-56 w-full rounded-2xl border border-border object-cover shadow-elegant sm:h-64"
-              width={800}
-              height={600}
+              width={760}
+              height={567}
+              loading="lazy"
+              decoding="async"
             />
             <img
               src={LABAFLOW_IMAGES.counterDropoff}
-              crossOrigin="anonymous"
               alt="A staff member receiving a laundry bag from a customer at the shop counter"
               className="h-56 w-full rounded-2xl border border-border object-cover shadow-elegant sm:mt-6 sm:h-64"
-              width={800}
-              height={600}
+              width={760}
+              height={567}
+              loading="lazy"
+              decoding="async"
             />
             <Card className="border-border/80 sm:col-span-2">
               <CardContent className="flex flex-col gap-2 p-5">

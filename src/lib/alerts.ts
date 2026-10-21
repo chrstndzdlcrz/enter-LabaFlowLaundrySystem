@@ -1,12 +1,26 @@
 /**
  * SweetAlert2 wrappers so confirmations and alerts share one Oceanic Breeze look
  * and one place to change it.
+ *
+ * The library is imported on demand: alert boxes only ever appear after someone
+ * taps something, so keeping it out of the bundles that render the first screen
+ * means the public site does not download it just to be looked at.
  */
-import Swal from "sweetalert2";
+import type SwalType from "sweetalert2";
 
 const PRIMARY = "hsl(191, 85%, 33%)";
 const DESTRUCTIVE = "hsl(0, 72%, 44%)";
 const SUCCESS = "hsl(152, 58%, 30%)";
+
+let alertLibrary: Promise<typeof SwalType> | null = null;
+
+/** Loads SweetAlert2 once, the first time an alert is actually needed. */
+export function loadAlerts(): Promise<typeof SwalType> {
+  if (!alertLibrary) {
+    alertLibrary = import("sweetalert2").then((module) => module.default);
+  }
+  return alertLibrary;
+}
 
 function baseOptions() {
   return {
@@ -31,6 +45,7 @@ export async function confirmAction(options: {
   danger?: boolean;
   icon?: "warning" | "question" | "info";
 }) {
+  const Swal = await loadAlerts();
   const result = await Swal.fire({
     ...baseOptions(),
     title: options.title,
@@ -45,6 +60,7 @@ export async function confirmAction(options: {
 }
 
 export async function alertSuccess(title: string, text?: string) {
+  const Swal = await loadAlerts();
   await Swal.fire({
     ...baseOptions(),
     title,
@@ -56,6 +72,7 @@ export async function alertSuccess(title: string, text?: string) {
 }
 
 export async function alertError(title: string, text?: string) {
+  const Swal = await loadAlerts();
   await Swal.fire({
     ...baseOptions(),
     title,
@@ -67,22 +84,25 @@ export async function alertError(title: string, text?: string) {
 }
 
 export async function alertInfo(title: string, text?: string) {
+  const Swal = await loadAlerts();
   await Swal.fire({ ...baseOptions(), title, text, icon: "info" });
 }
 
 /** Inline, non-blocking feedback for routine saves. */
 export function flashSuccess(title: string) {
-  void Swal.fire({
-    ...baseOptions(),
-    toast: true,
-    position: "top-end",
-    icon: "success",
-    title,
-    showConfirmButton: false,
-    timer: 2400,
-    timerProgressBar: true,
-    customClass: { popup: "font-sans" },
-  });
+  void loadAlerts().then((Swal) =>
+    Swal.fire({
+      ...baseOptions(),
+      toast: true,
+      position: "top-end",
+      icon: "success",
+      title,
+      showConfirmButton: false,
+      timer: 2400,
+      timerProgressBar: true,
+      customClass: { popup: "font-sans" },
+    }),
+  );
 }
 
 /** Error messages come straight from the backend and are shown as-is. */

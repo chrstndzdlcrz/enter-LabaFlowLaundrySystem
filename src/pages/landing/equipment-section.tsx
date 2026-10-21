@@ -72,12 +72,12 @@ export function EquipmentSection() {
           <div className="space-y-4">
             <img
               src={LABAFLOW_IMAGES.equipment}
-              crossOrigin="anonymous"
               alt="A commercial washing machine beside the folding table at Lab-a-Day Laundry Shop"
               className="w-full rounded-[1.75rem] border border-border object-cover shadow-elegant"
-              width={1024}
-              height={768}
+              width={1000}
+              height={747}
               loading="lazy"
+              decoding="async"
             />
             <Card className="border-border/80">
               <CardContent className="flex flex-col gap-2 p-5">
