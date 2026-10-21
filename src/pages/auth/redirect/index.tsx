@@ -1,4 +1,5 @@
 import { Navigate } from "react-router-dom";
+import { ProfileUnavailable } from "@/components/auth/profile-unavailable";
 import { FullPageLoader } from "@/components/common/loading-state";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -8,7 +9,7 @@ const RoleRedirect = () => {
 
   if (loading) return <FullPageLoader />;
   if (!user) return <Navigate to="/login" replace />;
-  if (!profile) return <FullPageLoader label="Setting up your account…" />;
+  if (!profile) return <ProfileUnavailable />;
   if (role === "admin" || role === "staff") return <Navigate to="/manage" replace />;
   return <Navigate to="/app" replace />;
 };

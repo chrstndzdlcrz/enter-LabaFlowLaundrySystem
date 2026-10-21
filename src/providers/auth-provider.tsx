@@ -7,6 +7,31 @@ import type { UserRole } from "@/lib/constants";
 import { AuthContext, type AuthContextValue } from "./auth-context";
 
 /**
+ * Nothing in the app should wait on a backend call forever: a request that never
+ * answers used to leave the signed-in area on a spinner indefinitely.
+ */
+const AUTH_TIMEOUT_MS = 15000;
+
+function withTimeout<T>(work: Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error("The shop's backend did not answer in time.")),
+      AUTH_TIMEOUT_MS,
+    );
+    work.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
+/**
  * Session source of truth.
  *
  * The auth listener is registered before the existing session is read, so the
@@ -25,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadingProfileRef.current = userId;
     try {
       // ensureProfile is idempotent and creates the row on the first sign-in.
-      const loaded = await ensureProfile().catch(async () => fetchProfile(userId));
+      const loaded = await withTimeout(ensureProfile().catch(async () => fetchProfile(userId)));
       setProfile(loaded);
     } catch (error) {
       console.error("Lab a Day: profile load failed", error);
@@ -52,15 +77,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    void supabase.auth.getSession().then(({ data: sessionData }) => {
-      setSession(sessionData.session);
-      setUser(sessionData.session?.user ?? null);
-      if (sessionData.session?.user) {
-        void loadProfile(sessionData.session.user.id);
-      } else {
+    // A store or a network that never answers must not leave the whole signed-in
+    // area on a spinner, so the initial restore is bounded too.
+    void withTimeout(supabase.auth.getSession())
+      .then(({ data: sessionData }) => {
+        setSession(sessionData.session);
+        setUser(sessionData.session?.user ?? null);
+        if (sessionData.session?.user) {
+          void loadProfile(sessionData.session.user.id);
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error("Lab a Day: could not restore the session", error);
         setLoading(false);
-      }
-    });
+      });
 
     return () => {
       data.subscription.unsubscribe();
@@ -72,8 +104,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       return;
     }
-    const loaded = await ensureProfile().catch(async () => fetchProfile(user.id));
-    setProfile(loaded);
+    try {
+      const loaded = await withTimeout(ensureProfile().catch(async () => fetchProfile(user.id)));
+      setProfile(loaded);
+    } catch (error) {
+      console.error("Lab a Day: profile reload failed", error);
+      setProfile(null);
+    }
   }, [user]);
 
   const signOut = useCallback(async () => {

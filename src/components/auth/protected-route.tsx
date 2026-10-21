@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { AccountInactive } from "@/components/auth/account-inactive";
+import { ProfileUnavailable } from "@/components/auth/profile-unavailable";
 import { FullPageLoader } from "@/components/common/loading-state";
 import { useAuth } from "@/hooks/use-auth";
 import type { UserRole } from "@/lib/constants";
@@ -25,7 +26,7 @@ export function ProtectedRoute({
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  if (!profile) return <FullPageLoader label="Setting up your account…" />;
+  if (!profile) return <ProfileUnavailable />;
 
   if (!profile.is_active) return <AccountInactive />;
 
