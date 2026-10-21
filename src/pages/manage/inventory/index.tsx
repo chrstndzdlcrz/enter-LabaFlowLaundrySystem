@@ -4,6 +4,7 @@ import { AlertTriangle, Boxes } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlaceholderBadge, ToneBadge } from "@/components/common/status-badge";
 import { PageHeader } from "@/components/common/page-header";
